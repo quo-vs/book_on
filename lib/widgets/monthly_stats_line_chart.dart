@@ -70,17 +70,21 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
   }
 
   List<BookQuantity> _createMonthChartData() {
+    var now = DateTime.now();
+    var firstDayOfTheMonth = DateTime(now.year, now.month, 1);
+    var lastDayOfTheMonth = DateTime(now.year, now.month + 1, 0);
+
     var monthStatsData = widget.booksData.map((b) => b.log).where((b) {
-      return b.finishedDate != null;
+      return b.finishedDate != null 
+        && b.finishedDate!.isAfter(firstDayOfTheMonth.subtract(Duration(days: 1))) 
+        && b.finishedDate!.isBefore(lastDayOfTheMonth.add(Duration(days: 1)));
     }).toList();
     monthStatsData.sort((a, b) {
       return a.finishedDate!.compareTo(b.finishedDate!);
     });
 
     List<BookQuantity> data = [];
-    var now = DateTime.now();
-    var firstDayOfTheMonth = DateTime(now.year, now.month, 1);
-    var lastDayOfTheMonth = DateTime(now.year, now.month + 1, 0);
+    
 
     data.add(_addChartData(firstDayOfTheMonth, monthStatsData));
     monthStatsData.forEach((element) {

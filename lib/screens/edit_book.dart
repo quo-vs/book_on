@@ -141,11 +141,11 @@ class _EditBookScreenState extends State<EditBookScreen> {
         );
         var bookLogId = await bookLogsDao.insertBookLog(emptyBokLog);
 
-        _editedBook =
-            _editedBook.copyWith(
-              image: moor.Value(_imageBase64String),
-              bookLogId: moor.Value(bookLogId)
-            );
+        if (imageFile != null) {
+          _editedBook =_editedBook.copyWith(image: moor.Value(_imageBase64String));
+        }
+        _editedBook = _editedBook.copyWith(bookLogId: moor.Value(bookLogId));
+
         await dao.insertBook(_editedBook);
     
       } catch (error) {
@@ -190,7 +190,7 @@ class _EditBookScreenState extends State<EditBookScreen> {
           title: Text(_isEditMode ? tr('editBook') : tr('addBook')),
           actions: [
             if (_isEditMode) IconButton(icon: const Icon(Icons.delete), onPressed: () {
-              AlertHelper.onBackAlertButtonsPressed(context, _deleteBook);
+              AlertHelper.onDeleteAlertButtonsPressed(context, _deleteBook);
             }),
             IconButton(icon: const Icon(Icons.save), onPressed: _saveForm),
           ],
@@ -235,7 +235,7 @@ class _EditBookScreenState extends State<EditBookScreen> {
                                           imageFile!.readAsBytesSync(),
                                           fit: BoxFit.cover,
                                         )
-                                      : initial?.image != null
+                                      : initial?.image != null && initial?.image != ""
                                           ? Container(
                                               child:
                                                   Functions.imageFromBase64String(

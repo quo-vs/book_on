@@ -1,5 +1,6 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+
+import 'package:easy_localization/easy_localization.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
@@ -9,7 +10,7 @@ class AlertHelper {
     var result = await Alert(
       context: context,
       type: AlertType.warning,
-      title: tr("changesNotSaved"),
+      title: tr("changesNotSavedDescription"),
       buttons: [
         DialogButton(
           child: Text(
@@ -20,10 +21,7 @@ class AlertHelper {
             await callbackFunction();
             return Navigator.of(context).pop(true);
           },
-          gradient: const LinearGradient(colors: [
-            Color.fromRGBO(250, 16, 91, 1.0),
-            Color.fromRGBO(240, 38, 99, 1.0),
-          ]),
+          color: Theme.of(context).primaryColor, 
         ),
         DialogButton(
           child: Text(
@@ -31,7 +29,7 @@ class AlertHelper {
             style: const TextStyle(color: Colors.white, fontSize: 14),
           ),
           onPressed: () => Navigator.of(context).pop(false),
-          color: const Color.fromRGBO(0, 179, 134, 1.0),
+           color: Theme.of(context).errorColor,
         ),
       ],
     ).show();
@@ -53,10 +51,7 @@ class AlertHelper {
           onPressed: () async {
             await callbackFunction();
           },
-          gradient: const LinearGradient(colors: [
-            Color.fromRGBO(250, 16, 91, 1.0),
-            Color.fromRGBO(240, 38, 99, 1.0),
-          ]),
+          color: Theme.of(context).errorColor 
         ),
         DialogButton(
           child: Text(
@@ -64,7 +59,7 @@ class AlertHelper {
             style: const TextStyle(color: Colors.white, fontSize: 14),
           ),
           onPressed: () => Navigator.pop(context),
-          color: const Color.fromRGBO(0, 179, 134, 1.0),
+           color: Theme.of(context).primaryColor 
         ),
       ],
     ).show();

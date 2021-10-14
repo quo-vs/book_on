@@ -12,12 +12,9 @@ class BookCard extends StatelessWidget {
   final bool withTitle;
   final bool isFinished;
 
-  BookCard({
-    Key? key, 
-    this.entry, 
-    this.withTitle = true, 
-    this.isFinished = false
-  }) : super(key: key);
+  BookCard(
+      {Key? key, this.entry, this.withTitle = true, this.isFinished = false})
+      : super(key: key);
 
   static final uuid = Uuid();
   final String imgTag = uuid.v4();
@@ -28,14 +25,12 @@ class BookCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     var bgForFinishedBook = RotatedCornerDecoration(
       color: Colors.blue,
-
       geometry: const BadgeGeometry(
-        width: 48, 
+        width: 48,
         height: 48,
-        cornerRadius: 10, 
+        cornerRadius: 10,
         alignment: BadgeAlignment.topLeft,
       ),
       labelInsets: const LabelInsets(baselineShift: 3),
@@ -67,13 +62,25 @@ class BookCard extends StatelessWidget {
                   borderRadius: _borderRadius(),
                   child: Hero(
                     tag: imgTag,
-                    child: entry != null
+                    child: entry != null && entry!.image.isNotEmpty
                         ? Column(
                             children: [
                               Image.memory(entry!.image),
                             ],
                           )
-                        : Container(),
+                        : Container(
+                            width: 130,
+                            height: 170,
+                            child: Center(
+                              child: Text(
+                                tr('noImage'),
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                          ),
                   ),
                 ),
               ),

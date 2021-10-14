@@ -5,7 +5,7 @@ class AppConst {
 
   static const double heightBetweenWidgets = 12;
 
-  static const double imageLogoHeight = 135;
+  static const double imageLogoHeight = 115;
   static const double imageLogoWidth = 180;
 }
 

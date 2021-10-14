@@ -152,62 +152,64 @@ class _EditQuoteScreenState extends State<EditQuoteScreen> {
           ? const Center(
               child: CircularProgressIndicator(),
             )
-          : Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        TextFormField(
-                          decoration: InputDecoration(
-                            labelText: tr('quote'),
-                            fillColor: Colors.transparent,
+          : SingleChildScrollView(
+            child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            decoration: InputDecoration(
+                              labelText: tr('quote'),
+                              fillColor: Colors.transparent, 
+                            ),
+                            maxLength: 128,
+                            textInputAction: TextInputAction.next,
+                            keyboardType: TextInputType.text,
+                            controller: _quoteTextController,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return tr('requiredField');
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {},
                           ),
-                          textInputAction: TextInputAction.next,
-                          keyboardType: TextInputType.text,
-                          controller: _quoteTextController,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return tr('requiredField');
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {},
-                        ),
-                        const SizedBox(
-                          height: AppConst.heightBetweenWidgets,
-                        ),
-                        TextFormField(
-                          decoration: InputDecoration(
-                            labelText: tr('author'),
-                            fillColor: Colors.transparent,
+                          const SizedBox(
+                            height: AppConst.heightBetweenWidgets,
                           ),
-                          textInputAction: TextInputAction.next,
-                          keyboardType: TextInputType.text,
-                          controller: _authorTextController,
-                          maxLength: 60,
-                        ),
-                        const SizedBox(
-                          height: AppConst.heightBetweenWidgets,
-                        ),
-                        Container(
-                          child: Text(tr('selectBackground')),
-                        ),
-                        const SizedBox(
-                          height: AppConst.heightBetweenWidgets,
-                        ),
-                        ImagesSlider(
-                            //key: UniqueKey(),
-                            onImageSelected: _onImageSelected,
-                            imagePath: _isEditMode ? _selectedImagePath : null)
-                      ],
+                          TextFormField(
+                            decoration: InputDecoration(
+                              labelText: tr('author'),
+                              fillColor: Colors.transparent,
+                            ),
+                            textInputAction: TextInputAction.next,
+                            keyboardType: TextInputType.text,
+                            controller: _authorTextController,
+                            maxLength: 60,
+                          ),
+                          const SizedBox(
+                            height: AppConst.heightBetweenWidgets,
+                          ),
+                          Container(
+                            child: Text(tr('selectBackground')),
+                          ),
+                          const SizedBox(
+                            height: AppConst.heightBetweenWidgets,
+                          ),
+                          ImagesSlider(
+                              onImageSelected: _onImageSelected,
+                              imagePath: _isEditMode ? _selectedImagePath : null)
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+          ),
     );
   }
 }

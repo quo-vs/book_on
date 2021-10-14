@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.vsprog.book_on">
    <application
-        android:label="book_on"
+        android:label="BookOn"
         android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"

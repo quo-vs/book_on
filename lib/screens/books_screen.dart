@@ -10,6 +10,7 @@ import '../utils/functions.dart';
 import '../widgets/book_card.dart';
 import '../widgets/books_slider.dart';
 import '../utils/constants.dart';
+import '../screens/all_books_screen.dart';
 
 class BooksScreen extends StatefulWidget {
   const BooksScreen({Key? key}) : super(key: key);
@@ -19,16 +20,13 @@ class BooksScreen extends StatefulWidget {
 }
 
 class _BooksScreenState extends State<BooksScreen> {
-
   List<BookWithLog> _lastReadBooks(List<BookWithLog> books) {
-    	
-  Comparator<BookWithLog> updateDateComparator = (a, b) 
-    => a.log.updatedAt.difference(b.log.updatedAt).isNegative ? 1 : -1;
-  
-    var result = books
-     ..sort(updateDateComparator);
+    Comparator<BookWithLog> updateDateComparator = (a, b) =>
+        a.log.updatedAt.difference(b.log.updatedAt).isNegative ? 1 : -1;
 
-     return result.take(4).toList();  
+    var result = books..sort(updateDateComparator);
+
+    return result.take(4).toList();
   }
 
   @override
@@ -37,18 +35,18 @@ class _BooksScreenState extends State<BooksScreen> {
       appBar: AppBar(
         actions: [
           IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              Functions.pushPageNamed(context, EditBookScreen.routeName);
-            },
-          ),
-          IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
               Functions.pushPageNamed(context, SettingsScreen.routeName);
             },
           ),
         ],
+        leading: IconButton(
+          icon: const Icon(Icons.add),
+          onPressed: () {
+            Functions.pushPageNamed(context, EditBookScreen.routeName);
+          },
+        ),
         title: Text(tr('books')),
       ),
       body: StreamBuilder(
@@ -67,14 +65,15 @@ class _BooksScreenState extends State<BooksScreen> {
           }
 
           return ListView(
-            
             children: [
               Container(
                 margin: const EdgeInsets.only(left: 20, top: 15),
                 child: Text(
                   tr('lastRead'),
                   textAlign: TextAlign.start,
-                  style: const TextStyle(fontSize: 20,),
+                  style: const TextStyle(
+                    fontSize: 20,
+                  ),
                 ),
               ),
               const SizedBox(
@@ -89,10 +88,30 @@ class _BooksScreenState extends State<BooksScreen> {
                 ),
               ),
               Container(
-                margin: const EdgeInsets.only(left: 20),
-                child: Text(
-                  tr('allBooks'),
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                margin: const EdgeInsets.only(left: 10),
+                alignment: Alignment.centerLeft,
+                child: FlatButton(
+                  child: Container(
+                    padding: const EdgeInsets.only(
+                      bottom: 5, // Space between underline and text
+                    ),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            bottom: BorderSide(
+                      color: Theme.of(context).primaryColor,
+                      width: 2.0,
+                    ))),
+                    child: Text(
+                      tr('allBooks'),
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Theme.of(context).textTheme.bodyText1?.color,
+                      ),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pushNamed(AllBooksScreen.routeName);
+                  },
                 ),
               ),
               const SizedBox(
@@ -110,11 +129,14 @@ class _BooksScreenState extends State<BooksScreen> {
                     itemCount: snapshot.data!.length,
                     itemBuilder: (_, index) {
                       return Padding(
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: 5, vertical: 10,),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 5,
+                          vertical: 10,
+                        ),
                         child: BookCard(
                           key: ValueKey(snapshot.data![index].book.id),
-                          entry: snapshot.data![index].book,),
+                          entry: snapshot.data![index].book,
+                        ),
                       );
                     },
                   ),
@@ -127,4 +149,3 @@ class _BooksScreenState extends State<BooksScreen> {
     );
   }
 }
-

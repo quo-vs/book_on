@@ -63,8 +63,8 @@ class _ImagesSliderState extends State<ImagesSlider> {
 
               var decoration = BoxDecoration(
                   border: Border.all(
-                    width: 4,
-                    color: Colors.black45,
+                    width: 8,
+                    color: Theme.of(context).primaryColor,
                   ),
                   borderRadius: BorderRadius.circular(10),
                 );
@@ -74,8 +74,8 @@ class _ImagesSliderState extends State<ImagesSlider> {
                  return Container(
                 decoration: BoxDecoration(
                   border: Border.all(
-                    width: imageUrls[_currentIndex] == imageUri ? 4 : 1,
-                    color: Colors.black45,
+                    width: imageUrls[_currentIndex] == imageUri ? 8 : 1,
+                    color: Theme.of(context).primaryColor,
                   ),
                   borderRadius: BorderRadius.circular(10),
                 ),

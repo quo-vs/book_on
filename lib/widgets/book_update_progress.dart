@@ -120,20 +120,37 @@ class _BookUpdateProgressAlertState extends State<BookUpdateProgressAlert> {
                   const SizedBox(
                     height: 5,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.bookEntry.title,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        Text(
-                          widget.bookEntry.author,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                      ],
+                  Expanded(
+                    child: Container(
+                      height: 120,
+                      alignment: Alignment.bottomLeft,
+                      padding: const EdgeInsets.only(left: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          Text(
+                            widget.bookEntry.title,
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            widget.bookEntry.author,
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            tr('pagesAmount', args: [widget.bookEntry.pagesAmount.toString()]),
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -159,6 +176,12 @@ class _BookUpdateProgressAlertState extends State<BookUpdateProgressAlert> {
                         child: TextFormField(
                           style: const TextStyle(fontSize: 12),
                           textAlign: TextAlign.end,
+                          validator: (value) {
+                            if (value != null && int.parse(value) > widget.bookEntry.pagesAmount) {
+                              return tr('tooManyPagesError');
+                            }
+                            return null;
+                          },
                           controller: _currentPageController,
                           decoration: _buildInputDecoration(),
                         ),

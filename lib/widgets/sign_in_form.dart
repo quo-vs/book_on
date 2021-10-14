@@ -112,139 +112,141 @@ class _SignInFormState extends State<SignInForm> {
       });
     }
 
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height -
-          AppConst.imageLogoHeight -
-          AppConst.heightBetweenWidgets * 6,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _GoogleLoginButton(isOffline),
-          Row(children: <Widget>[
-            Expanded(
-              child: Container(
-                  margin: const EdgeInsets.only(left: 10.0, right: 15.0),
-                  child: const Divider(
-                    color: Colors.black,
-                    height: 50,
-                  )),
-            ),
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 20),
-              child: Text(
-                tr("or"),
-                style: const TextStyle(fontSize: 28),
+    return SingleChildScrollView(
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height -
+            AppConst.imageLogoHeight -
+            AppConst.heightBetweenWidgets * 5,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _GoogleLoginButton(isOffline),
+            Row(children: <Widget>[
+              Expanded(
+                child: Container(
+                    margin: const EdgeInsets.only(left: 10.0, right: 15.0),
+                    child: const Divider(
+                      color: Colors.black,
+                      height: 50,
+                    )),
               ),
-            ),
-            Expanded(
-              child: Container(
-                  margin: const EdgeInsets.only(left: 15.0, right: 10.0),
-                  child: const Divider(
-                    color: Colors.black,
-                    height: 50,
-                  )),
-            ),
-          ]),
-          Form(
-            key: _key,
-            autovalidateMode: _autoValidate == true
-                ? AutovalidateMode.always
-                : AutovalidateMode.disabled,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                TextFormField(
-                  decoration: InputDecoration(
-                      labelText: tr('email_label'),
-                      fillColor: Colors.transparent,
-                      filled: true,
-                      isDense: true,
-                      prefixIcon: const Icon(Icons.email)),
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  autocorrect: false,
-                  validator: (value) {
-                    if (value == null) {
-                      return tr('email_required_error');
-                    }
-                    return null;
-                  },
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 20),
+                child: Text(
+                  tr("or"),
+                  style: const TextStyle(fontSize: 28),
                 ),
-                const SizedBox(
-                  height: AppConst.heightBetweenWidgets,
-                ),
-                TextFormField(
-                  decoration: InputDecoration(
-                      labelText: tr('password_label'),
-                      fillColor: Colors.transparent,
-                      filled: true,
-                      isDense: true,
-                      prefixIcon: const Icon(Icons.password)),
-                  obscureText: true,
-                  controller: _passwordController,
-                  validator: (value) {
-                    if (value == null) {
-                      return tr('password_required_error');
-                    }
-                    return null;
-                  },
-                ),
-                if (!_isLogin)
+              ),
+              Expanded(
+                child: Container(
+                    margin: const EdgeInsets.only(left: 15.0, right: 10.0),
+                    child: const Divider(
+                      color: Colors.black,
+                      height: 50,
+                    )),
+              ),
+            ]),
+            Form(
+              key: _key,
+              autovalidateMode: _autoValidate == true
+                  ? AutovalidateMode.always
+                  : AutovalidateMode.disabled,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  TextFormField(
+                    decoration: InputDecoration(
+                        labelText: tr('email_label'),
+                        fillColor: Colors.transparent,
+                        filled: true,
+                        isDense: true,
+                        prefixIcon: const Icon(Icons.email)),
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    autocorrect: false,
+                    validator: (value) {
+                      if (value == null) {
+                        return tr('email_required_error');
+                      }
+                      return null;
+                    },
+                  ),
                   const SizedBox(
                     height: AppConst.heightBetweenWidgets,
                   ),
-                if (!_isLogin)
                   TextFormField(
                     decoration: InputDecoration(
-                        labelText: tr('confirm_password_label'),
+                        labelText: tr('password_label'),
                         fillColor: Colors.transparent,
                         filled: true,
                         isDense: true,
                         prefixIcon: const Icon(Icons.password)),
                     obscureText: true,
-                    controller: _confirmController,
+                    controller: _passwordController,
                     validator: (value) {
-                      if (value == null || _passwordController.text != value) {
-                        return tr('confirm_password_error');
+                      if (value == null) {
+                        return tr('password_required_error');
                       }
                       return null;
                     },
                   ),
-                const SizedBox(
-                  height: AppConst.heightBetweenWidgets,
-                ),
-                RaisedButton(
-                    color: Theme.of(context).accentColor,
-                    padding: const EdgeInsets.all(16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                  if (!_isLogin)
+                    const SizedBox(
+                      height: AppConst.heightBetweenWidgets,
                     ),
-                    child: Text(_isLogin ? tr('login') : tr('signup')),
-                    onPressed: _isLogin
-                        ? _onLoginButtonPressed
-                        : _onSignUpButtonPressed),
-                const SizedBox(
-                  height: AppConst.heightBetweenWidgets,
-                ),
-                AuthButtonsRow(
-                  isLogin: _isLogin,
-                  switchAuthMode: _switchAuthMode,
-                )
-              ],
-            ),
-          ),
-          Expanded(
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: TextButton(
-                onPressed: _onAnonymousButtonPressed,
-                child: Text(tr('exploreAnonymously'),
-                    style: TextStyle(fontSize: 20)),
+                  if (!_isLogin)
+                    TextFormField(
+                      decoration: InputDecoration(
+                          labelText: tr('confirm_password_label'),
+                          fillColor: Colors.transparent,
+                          filled: true,
+                          isDense: true,
+                          prefixIcon: const Icon(Icons.password)),
+                      obscureText: true,
+                      controller: _confirmController,
+                      validator: (value) {
+                        if (value == null || _passwordController.text != value) {
+                          return tr('confirm_password_error');
+                        }
+                        return null;
+                      },
+                    ),
+                  const SizedBox(
+                    height: AppConst.heightBetweenWidgets,
+                  ),
+                  RaisedButton(
+                      color: Theme.of(context).accentColor,
+                      padding: const EdgeInsets.all(16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(_isLogin ? tr('login') : tr('signup')),
+                      onPressed: _isLogin
+                          ? _onLoginButtonPressed
+                          : _onSignUpButtonPressed),
+                  const SizedBox(
+                    height: AppConst.heightBetweenWidgets,
+                  ),
+                  AuthButtonsRow(
+                    isLogin: _isLogin,
+                    switchAuthMode: _switchAuthMode,
+                  )
+                ],
               ),
             ),
-          ),
-        ],
+            Expanded(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: TextButton(
+                  onPressed: _onAnonymousButtonPressed,
+                  child: Text(tr('exploreAnonymously'),
+                      style: TextStyle(fontSize: 20)),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

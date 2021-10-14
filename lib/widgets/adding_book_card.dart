@@ -30,12 +30,12 @@ class AddBookCard extends StatelessWidget {
             borderRadius: const BorderRadius.all(
               Radius.circular(10),
             ),
-            child: bookEntry?.image != null
+            child: (bookEntry!.image != null && bookEntry!.image.isNotEmpty)
                 ? Image.memory(
                     bookEntry!.image,
                     fit: BoxFit.cover,
                   )
-                : Text(bookEntry!.title),
+                : Center(child: Text(bookEntry!.title)),
           ),
         ),
       ),

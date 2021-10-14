@@ -21,6 +21,7 @@ import '../screens/edit_book.dart';
 import '../screens/login_screen.dart';
 import '../screens/page_controller_screen.dart';
 import '../screens/quote_share_screen.dart';
+import '../screens/all_books_screen.dart';
 
 import '../screens/settings_streen.dart';
 
@@ -106,7 +107,7 @@ class _AppState extends State<App> {
               return PageControllerScreen();
             }
 
-            return LoginScreen(); // ScreensController();
+            return LoginScreen();
           },
         ),
         routes: {
@@ -114,7 +115,8 @@ class _AppState extends State<App> {
           EditBookScreen.routeName: (ctx) => const EditBookScreen(),
           AddGoalScreen.routeName: (ctx) => const AddGoalScreen(),
           EditQuoteScreen.routeName: (ctx) => const EditQuoteScreen(),
-          QuoteShareScreen.routeName: (ctx) => const QuoteShareScreen()
+          QuoteShareScreen.routeName: (ctx) => const QuoteShareScreen(),
+          AllBooksScreen.routeName: (ctx) => const AllBooksScreen(),
         },
       );
     });
