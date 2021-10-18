@@ -3,14 +3,14 @@ import 'package:easy_localization/easy_localization.dart';
 
 import '../blocs.dart';
 import '../../exceptions/auth_exception.dart';
-import '../../repositories/auth_repository.dart';
+import '../../services/auth_service.dart';
 
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final AuthBloc _authBloc;
-  final AuthRepository _authRepo;
+  final AuthService _authRepo;
   
-  LoginBloc(AuthBloc? authBloc, AuthRepository? authRepo)
+  LoginBloc(AuthBloc? authBloc, AuthService? authRepo)
     : assert(authBloc != null),
       assert(authRepo != null),
       _authBloc = authBloc!,

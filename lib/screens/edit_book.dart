@@ -12,6 +12,7 @@ import '../screens/page_controller_screen.dart';
 import '../data/database.dart';
 import '../utils/functions.dart';
 import '../utils/constants.dart';
+import '../widgets/book_log_form_widget.dart';
 
 class EditBookScreen extends StatefulWidget {
   static const routeName = '/edit-book';
@@ -26,12 +27,22 @@ class _EditBookScreenState extends State<EditBookScreen> {
   final _authorFocusNode = FocusNode();
   final _formKey = GlobalKey<FormState>();
 
+  var _isFinished = false;
+  final _currentPageController = TextEditingController();
+  final _dateController = TextEditingController();
+
   var _editedBook = BooksCompanion.insert(
       title: '',
       author: '',
       createdAt: DateTime.now(),
       image: moor.Uint8List(0),
       pagesAmount: 0);
+
+  var _editedBookLog = BookLogsCompanion.insert(
+    sessionDate: DateTime.now(),
+    isFinished: false,
+    updatedAt: DateTime.now(),
+  );
 
   BookInitial? initial;
 
@@ -59,18 +70,35 @@ class _EditBookScreenState extends State<EditBookScreen> {
           return;
         }
         _editedBook = _editedBook.copyWith(
-            id: moor.Value(book.id), 
+            id: moor.Value(book.id),
             image: moor.Value(book.image),
-            bookLogId: book.bookLogId != null ? moor.Value(book.bookLogId) : null
-          );
+            bookLogId:
+                book.bookLogId != null ? moor.Value(book.bookLogId) : null);
+
+        BookLog? bookLog;
+        if (book.bookLogId != null) {
+          var logsDao = Provider.of<BookLogsDao>(context, listen: false);
+          bookLog = await logsDao.findBookLogById(bookId);
+          if (bookLog != null) {
+            _editedBookLog = _editedBookLog.copyWith(
+              currentPage: moor.Value(bookLog.currentPage),
+              sessionDate: moor.Value(bookLog.sessionDate),
+              isFinished: moor.Value(bookLog.isFinished),
+            );
+          }
+        }
 
         setState(() {
           initial = BookInitial(
-            title: book.title, 
-            author: book.author, 
-            image: Functions.base64String(book.image), 
-            pagesAmount: book.pagesAmount
-          );
+              title: book.title,
+              author: book.author,
+              image: Functions.base64String(book.image),
+              pagesAmount: book.pagesAmount,
+              currentPage: bookLog != null && bookLog.currentPage != null
+                  ? bookLog.currentPage!
+                  : 0,
+              isFinished: bookLog != null ? bookLog.isFinished : false,
+              sessionDate: DateTime.now());
 
           _isLoading = false;
           _isEditMode = true;
@@ -93,9 +121,11 @@ class _EditBookScreenState extends State<EditBookScreen> {
     }
     _formKey.currentState?.save();
     return Functions.sameValues(initial!.title, _editedBook.title.value) &&
-      Functions.sameValues(initial!.author, _editedBook.author.value) &&
-      Functions.sameValues(initial!.pagesAmount.toString(), _editedBook.pagesAmount.value.toString()) &&
-      Functions.sameValues(initial!.image, Functions.base64String(_editedBook.image.value));
+        Functions.sameValues(initial!.author, _editedBook.author.value) &&
+        Functions.sameValues(initial!.pagesAmount.toString(),
+            _editedBook.pagesAmount.value.toString()) &&
+        Functions.sameValues(
+            initial!.image, Functions.base64String(_editedBook.image.value));
   }
 
   Future<void> _deleteBook() async {
@@ -123,31 +153,41 @@ class _EditBookScreenState extends State<EditBookScreen> {
     });
     var dao = Provider.of<BooksDao>(context, listen: false);
     var bookLogsDao = Provider.of<BookLogsDao>(context, listen: false);
-    
+
     if (_editedBook.id.toString() != moor.Value.absent().toString()) {
       await dao.updateBook(_editedBook);
       if (_editedBook.bookLogId.value != null) {
         var log = await bookLogsDao.findBookLogById(_editedBook.bookLogId.value!);
-        var updatedLog = log?.copyWith(updatedAt: DateTime.now());
+
+        DateTime sessionDate = _dateController.text.isNotEmpty
+            ? DateTime.parse(_dateController.text).add(Duration(minutes: 1))
+            : DateTime.now();
+        var updatedLog = log?.copyWith(
+            sessionDate: sessionDate,
+            currentPage: _currentPageController.text.isNotEmpty
+                ? int.parse(_currentPageController.text)
+                : 0,
+            isFinished: _isFinished,
+            finishedDate: _isFinished == true ? sessionDate : null,
+            updatedAt: DateTime.now());
         await bookLogsDao.updateBookLog(updatedLog!);
       }
     } else {
       try {
-        var emptyBokLog = BookLogsCompanion.insert(
-          sessionDate: DateTime.now(), 
-          isFinished: false, 
-          updatedAt: DateTime.now(),
-          currentPage: const moor.Value(0)
-        );
-        var bookLogId = await bookLogsDao.insertBookLog(emptyBokLog);
+        var emptyBookLog = BookLogsCompanion.insert(
+            sessionDate: DateTime.now(),
+            isFinished: false,
+            updatedAt: DateTime.now(),
+            currentPage: const moor.Value(0));
+        var bookLogId = await bookLogsDao.insertBookLog(emptyBookLog);
 
         if (imageFile != null) {
-          _editedBook =_editedBook.copyWith(image: moor.Value(_imageBase64String));
+          _editedBook =
+              _editedBook.copyWith(image: moor.Value(_imageBase64String));
         }
         _editedBook = _editedBook.copyWith(bookLogId: moor.Value(bookLogId));
 
         await dao.insertBook(_editedBook);
-    
       } catch (error) {
         await showDialog<Null>(
           context: context,
@@ -175,13 +215,17 @@ class _EditBookScreenState extends State<EditBookScreen> {
     Navigator.of(context).pop();
   }
 
+  void _setIsFinished(bool? value) {
+    _isFinished = value ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
         if (_isEditMode && !_isBookNotDitry()) {
           await AlertHelper.onBackAlertButtonsPressed(context, _saveForm);
-          return  true;
+          return true;
         }
         return true;
       },
@@ -189,9 +233,13 @@ class _EditBookScreenState extends State<EditBookScreen> {
         appBar: AppBar(
           title: Text(_isEditMode ? tr('editBook') : tr('addBook')),
           actions: [
-            if (_isEditMode) IconButton(icon: const Icon(Icons.delete), onPressed: () {
-              AlertHelper.onDeleteAlertButtonsPressed(context, _deleteBook);
-            }),
+            if (_isEditMode)
+              IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () {
+                    AlertHelper.onDeleteAlertButtonsPressed(
+                        context, _deleteBook);
+                  }),
             IconButton(icon: const Icon(Icons.save), onPressed: _saveForm),
           ],
         ),
@@ -200,7 +248,7 @@ class _EditBookScreenState extends State<EditBookScreen> {
                 child: CircularProgressIndicator(),
               )
             : Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(12),
                 child: Form(
                   key: _formKey,
                   child: ListView(
@@ -224,7 +272,8 @@ class _EditBookScreenState extends State<EditBookScreen> {
                                   Radius.circular(10),
                                 ),
                                 onTap: () {
-                                  AlertHelper.showPictureSelectionBottonMenu(context, _getPictureFrom);
+                                  AlertHelper.showPictureSelectionBottonMenu(
+                                      context, _getPictureFrom);
                                 },
                                 child: ClipRRect(
                                   borderRadius: const BorderRadius.all(
@@ -235,10 +284,11 @@ class _EditBookScreenState extends State<EditBookScreen> {
                                           imageFile!.readAsBytesSync(),
                                           fit: BoxFit.cover,
                                         )
-                                      : initial?.image != null && initial?.image != ""
+                                      : initial?.image != null &&
+                                              initial?.image != ""
                                           ? Container(
-                                              child:
-                                                  Functions.imageFromBase64String(
+                                              child: Functions
+                                                  .imageFromBase64String(
                                                 initial!.image,
                                               ),
                                             )
@@ -250,7 +300,12 @@ class _EditBookScreenState extends State<EditBookScreen> {
                         ],
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        padding: const EdgeInsets.all(5),
+                        decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(10),
+                          ),
+                        ),
                         child: Column(
                           children: [
                             TextFormField(
@@ -283,8 +338,7 @@ class _EditBookScreenState extends State<EditBookScreen> {
                                 labelText: tr('author'),
                                 fillColor: Colors.transparent,
                               ),
-                              initialValue:
-                                  initial?.author.toString() ?? '',
+                              initialValue: initial?.author.toString() ?? '',
                               textInputAction: TextInputAction.next,
                               onFieldSubmitted: (_) {
                                 FocusScope.of(context)
@@ -309,7 +363,8 @@ class _EditBookScreenState extends State<EditBookScreen> {
                                 labelText: tr('numberOfPages'),
                                 fillColor: Colors.transparent,
                               ),
-                              initialValue: initial?.pagesAmount.toString() ?? '',
+                              initialValue:
+                                  initial?.pagesAmount.toString() ?? '',
                               textInputAction: TextInputAction.next,
                               keyboardType: TextInputType.number,
                               onFieldSubmitted: (_) {
@@ -328,6 +383,36 @@ class _EditBookScreenState extends State<EditBookScreen> {
                                         value != null ? int.parse(value) : 0));
                               },
                             ),
+                            if (_isEditMode)
+                              Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                  Text(tr("updateProgress")),
+                                  const SizedBox(
+                                    height: 8,
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.all(5),
+                                    decoration: const BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(18)),
+                                    ),
+                                    child: BookLogFormWidget(
+                                      pagesAmount:
+                                          _editedBook.pagesAmount.value,
+                                      bookLogId: _editedBook.bookLogId.value,
+                                      dateController: _dateController,
+                                      currentPageController:
+                                          _currentPageController,
+                                      isFinished: _isFinished,
+                                      isFinishedHandler: _setIsFinished,
+                                      editBookMode: true,
+                                    ),
+                                  ),
+                                ],
+                              )
                           ],
                         ),
                       ),
@@ -339,11 +424,9 @@ class _EditBookScreenState extends State<EditBookScreen> {
     );
   }
 
-
-
   Future<void> _getPictureFrom(ImageSource source) async {
     var pickedFile = await ImagePicker()
-        .pickImage(source: source, maxWidth: 1200, maxHeight: 1200);
+        .pickImage(source: source, maxWidth: 400, maxHeight: 400);
 
     if (pickedFile != null) {
       var pickedImageBytes = await pickedFile.readAsBytes();
@@ -357,15 +440,20 @@ class _EditBookScreenState extends State<EditBookScreen> {
 
 // helper class
 class BookInitial {
-    final String title;
-    final String author;
-    final String image;
-    final int pagesAmount;
+  final String title;
+  final String author;
+  final String image;
+  final int pagesAmount;
+  final int currentPage;
+  final DateTime sessionDate;
+  final bool isFinished;
 
-    BookInitial({
-      required this.title, 
-      required this.author, 
-      required this.image, 
-      required this.pagesAmount
-    });
+  BookInitial(
+      {required this.title,
+      required this.author,
+      required this.image,
+      required this.pagesAmount,
+      required this.currentPage,
+      required this.isFinished,
+      required this.sessionDate});
 }

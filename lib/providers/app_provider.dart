@@ -3,10 +3,19 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../services/books_service.dart';
+import '../services/quotes_service.dart';
 import '../config/theme.dart';
 import '../main.dart';
 
-class AppProvider extends ChangeNotifier {
+class AppProvider extends ChangeNotifier {  
+  ThemeData theme = ThemeConfig.lightTheme;
+  ThemeMode mode = ThemeMode.light;
+  bool syncWithCloud = false;
+  String language = 'en';
+
+  Key key = UniqueKey();
+
   AppProvider() {
     init();
   }
@@ -14,14 +23,10 @@ class AppProvider extends ChangeNotifier {
    void init() async {
     await setTheme(sharedPrefs.getTheme());
     setLanguage(null, sharedPrefs.getLanguage());
+    setSyncWithCloud(null, sharedPrefs.getSyncWithCloud());
     notifyListeners();
   }
 
-  ThemeData theme = ThemeConfig.lightTheme;
-  ThemeMode mode = ThemeMode.light;
-
-  String language = 'en';
-  Key key = UniqueKey();
 
   Future<void> setLanguage(BuildContext? context, lang) async {
     if (context != null) {
@@ -37,6 +42,18 @@ class AppProvider extends ChangeNotifier {
     await SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
 
     await sharedPrefs.setTheme(themeMode);
+    notifyListeners();
+  }
+
+  Future<void> setSyncWithCloud(BuildContext? context, bool sync) async {
+    await sharedPrefs.setSyncWithCloud(sync);
+    syncWithCloud = sync;
+
+    if (context != null) {
+      await BooksService().addBooks(context);
+      await QuotesService().addQuotes(context);
+    }
+
     notifyListeners();
   }
 }

@@ -90,5 +90,7 @@
     "manyBooks": "books",
     "noInternetConnection": "No internet connection",
     "noImage": "No image",
-    "pagesAmount": "Pages: {}"
+    "pagesAmount": "Pages: {}",
+    "quoteDeleted": "Quote has beed deleted",
+    "syncFirebase": "Sync with Cloud"
 }

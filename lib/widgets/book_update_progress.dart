@@ -8,6 +8,7 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import '../data/database.dart';
 import '../widgets/adding_book_card.dart';
 import '../utils/constants.dart';
+import '../widgets/book_log_form_widget.dart';
 
 class BookUpdateProgressAlert extends StatefulWidget {
   final Book bookEntry;
@@ -26,7 +27,7 @@ class _BookUpdateProgressAlertState extends State<BookUpdateProgressAlert> {
   var _isFinished = false;
   final _currentPageController = TextEditingController();
   final _dateController = TextEditingController();
-  final _saveButtonFocusNode = FocusNode();
+  final loginFormKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -39,27 +40,6 @@ class _BookUpdateProgressAlertState extends State<BookUpdateProgressAlert> {
         _dateController.text = log!.sessionDate.toString().substring(0, 10);
       });
     }
-  }
-
-  @override
-  void dispose() {
-    _saveButtonFocusNode.dispose();
-    super.dispose();
-  }
-
-  InputDecoration _buildInputDecoration() {
-    return const InputDecoration(
-      enabledBorder: UnderlineInputBorder(
-        borderSide: BorderSide(color: Colors.black),
-      ),
-      focusedBorder: UnderlineInputBorder(
-        borderSide: BorderSide(color: Colors.black),
-      ),
-      border: UnderlineInputBorder(
-        borderSide: BorderSide(color: Colors.black),
-      ),
-      fillColor: Colors.transparent,
-    );
   }
 
   Future<void> _updateBookProgres(BuildContext context) async {
@@ -94,8 +74,13 @@ class _BookUpdateProgressAlertState extends State<BookUpdateProgressAlert> {
     await booksDao.updateBook(_updatedBook);
   }
 
+  void _setIsFinished(bool? value) {
+    _isFinished = value ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
+
     return Column(
       children: [
         Container(
@@ -158,96 +143,14 @@ class _BookUpdateProgressAlertState extends State<BookUpdateProgressAlert> {
               const SizedBox(
                 height: AppConst.heightBetweenWidgets,
               ),
-              Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        tr("setCurrentPage"),
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                      Container(
-                        alignment: Alignment.center,
-                        width: 60,
-                        height: 20,
-                        margin: const EdgeInsets.only(right: 12),
-                        child: TextFormField(
-                          style: const TextStyle(fontSize: 12),
-                          textAlign: TextAlign.end,
-                          validator: (value) {
-                            if (value != null && int.parse(value) > widget.bookEntry.pagesAmount) {
-                              return tr('tooManyPagesError');
-                            }
-                            return null;
-                          },
-                          controller: _currentPageController,
-                          decoration: _buildInputDecoration(),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: AppConst.heightBetweenWidgets,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        tr('sessionDate'),
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                      Container(
-                        alignment: Alignment.center,
-                        width: 100,
-                        height: 20,
-                        margin: const EdgeInsets.only(right: 14),
-                        child: TextFormField(
-                            readOnly: true,
-                            style: TextStyle(fontSize: 12),
-                            controller: _dateController,
-                            textAlign: TextAlign.end,
-                            onTap: () async {
-                              var date = await showDatePicker(
-                                context: context,
-                                initialDate: _dateController.text.isNotEmpty
-                                    ? DateTime.parse(_dateController.text)
-                                    : DateTime.now(),
-                                firstDate: DateTime.now()
-                                    .subtract(const Duration(days: 5 * 365)),
-                                lastDate: DateTime.now(),
-                              );
-                              _dateController.text = date != null
-                                  ? date.toString().substring(0, 10)
-                                  : DateTime.now().toString().substring(0, 10);
-                              // FocusScope.of(context)
-                              //     .requestFocus(_saveButtonFocusNode);
-                            },
-                            decoration: _buildInputDecoration()),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        tr('isFinished'),
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                      Checkbox(
-                        value: _isFinished,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            _isFinished = value ?? false;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+              BookLogFormWidget(
+                pagesAmount: widget.bookEntry.pagesAmount, 
+                bookLogId: widget.bookEntry.bookLogId,
+                dateController: _dateController, 
+                currentPageController: _currentPageController, 
+                isFinished: _isFinished, 
+                isFinishedHandler: _setIsFinished,                
+              )
             ],
           ),
         ),

@@ -1,16 +1,17 @@
+import '../../blocs/auth/auth.dart';
+import '../../blocs/auth/auth_bloc.dart';
+import '../../blocs/signup/signup_event.dart';
+import '../../blocs/signup/signup_state.dart';
+import '../../exceptions/auth_exception.dart';
+import '../../services/auth_service.dart';
+
 import 'package:bloc/bloc.dart';
-import 'package:book_on/blocs/auth/auth.dart';
-import 'package:book_on/blocs/auth/auth_bloc.dart';
-import 'package:book_on/blocs/signup/signup_event.dart';
-import 'package:book_on/blocs/signup/signup_state.dart';
-import 'package:book_on/exceptions/auth_exception.dart';
-import 'package:book_on/repositories/auth_repository.dart';
 
 class SignupBloc extends Bloc<SignupEvent, SignupState> {
   final AuthBloc _authBloc;
-  final AuthRepository _authRepo;
+  final AuthService _authRepo;
   
-  SignupBloc(AuthBloc? authBloc, AuthRepository? authRepo)
+  SignupBloc(AuthBloc? authBloc, AuthService? authRepo)
     : assert(authBloc != null),
       assert(authRepo != null),
       _authBloc = authBloc!,

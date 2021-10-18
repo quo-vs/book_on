@@ -167,6 +167,7 @@ class _EditQuoteScreenState extends State<EditQuoteScreen> {
                               fillColor: Colors.transparent, 
                             ),
                             maxLength: 128,
+                            maxLines: 4,
                             textInputAction: TextInputAction.next,
                             keyboardType: TextInputType.text,
                             controller: _quoteTextController,

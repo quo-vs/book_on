@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SPSettings {
   static const String languageKey = 'language';
   static const String themeKey = 'theme';
+  static const String syncKey = 'sync';
 
   late SharedPreferences _sharedPreferences;
   SPSettings._internal();
@@ -37,5 +38,16 @@ class SPSettings {
     language ??= 'en';
 
     return language;
+  }
+
+  Future setSyncWithCloud(bool syncWihCloud) async {
+    return await _sharedPreferences.setBool(syncKey, syncWihCloud);
+  }
+
+  bool getSyncWithCloud() {
+    bool? syncWithCloud = _sharedPreferences.getBool(syncKey);
+    syncWithCloud ??= false;
+
+    return syncWithCloud;
   }
 }

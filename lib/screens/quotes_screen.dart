@@ -9,11 +9,18 @@ import '../screens/quote_share_screen.dart';
 import '../widgets/quote_widget.dart';
 import '../utils/functions.dart';
 
-class QuotesSctreen extends StatelessWidget {
+class QuotesSctreen extends StatefulWidget {
   const QuotesSctreen({Key? key}) : super(key: key);
 
   @override
+  State<QuotesSctreen> createState() => _QuotesSctreenState();
+}
+
+class _QuotesSctreenState extends State<QuotesSctreen> {
+  @override
   Widget build(BuildContext context) {
+    var dao = Provider.of<QuotesDao>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(tr("quotes")),
@@ -25,7 +32,7 @@ class QuotesSctreen extends StatelessWidget {
         ),
       ),
       body: StreamBuilder(
-        stream: Provider.of<QuotesDao>(context).watchAllQuotes(),
+        stream: dao.watchAllQuotes(),
         builder: (ctx, AsyncSnapshot<List<Quote>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -44,12 +51,40 @@ class QuotesSctreen extends StatelessWidget {
             child: ListView.builder(
               itemCount: snapshot.data?.length,
               itemBuilder: (context, index) {
-                return InkWell(
-                  onTap: () {
-                    Functions.pushPageNamed(context, QuoteShareScreen.routeName,
-                        snapshot.data![index].id);
+                return Dismissible(
+                  key: UniqueKey(),
+                  direction: DismissDirection.endToStart,
+                  onDismissed: (direction) async {
+                    if (direction == DismissDirection.endToStart) {
+                      await dao.deleteQuote(snapshot.data![index]);
+                      setState(() {                        
+                        snapshot.data!.removeAt(index);
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(tr('quoteDeleted')),
+                        backgroundColor: Theme.of(context).errorColor,
+                      ));
+                    }
                   },
-                  child: QuoteWidget(quote: snapshot.data![index]),
+                  background: Container(
+                    alignment: Alignment.centerLeft,
+                    padding: const EdgeInsets.only(left: 20.0),
+                    color: Colors.blue,
+                    child: const Icon(Icons.archive_outlined, color: Colors.white),
+                  ),
+                  secondaryBackground: Container(
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 20.0),
+                    color: Colors.redAccent,
+                    child: const Icon(Icons.delete, color: Colors.white),
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      Functions.pushPageNamed(context,
+                          QuoteShareScreen.routeName, snapshot.data![index].id);
+                    },
+                    child: QuoteWidget(quote: snapshot.data![index]),
+                  ),
                 );
               },
             ),

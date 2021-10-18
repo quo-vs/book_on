@@ -1,9 +1,9 @@
 import 'package:book_on/blocs/auth/auth.dart';
-import 'package:book_on/repositories/auth_repository.dart';
+import 'package:book_on/services/auth_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
-class FakeAuthRepository extends Mock implements AuthRepository {}
+class FakeAuthRepository extends Mock implements AuthService {}
 
 void main() {
   FakeAuthRepository? fakeAuthRepository;

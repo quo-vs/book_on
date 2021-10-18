@@ -15,7 +15,8 @@ import '../blocs/signup/signup_event.dart';
 import '../widgets/auth_buttom_row.dart';
 import '../utils/constants.dart';
 import '../utils/alerts_helper.dart';
-
+import '../blocs/auth/auth.dart';
+import '../blocs/auth/auth_bloc.dart';
 
 class SignInForm extends StatefulWidget {
   const SignInForm({Key? key}) : super(key: key);
@@ -100,10 +101,12 @@ class _SignInFormState extends State<SignInForm> {
 
     _onAnonymousButtonPressed() async {
       if (await isOffline()) {
-        AlertHelper.showOfflineAlert(context);
-        return;
+        await AlertHelper.showOfflineAlert(context);
+        final _authBloc = BlocProvider.of<AuthBloc>(context);
+        _authBloc.add(LoggedIn(displayName: 'Unknown'));
+      } else {
+        _loginBloc.add(LoginAnonymouslyButtonPressed());
       }
-      _loginBloc.add(LoginAnonymouslyButtonPressed());
     }
 
     void _switchAuthMode() {
@@ -191,27 +194,27 @@ class _SignInFormState extends State<SignInForm> {
                       return null;
                     },
                   ),
-                  if (!_isLogin)
-                    const SizedBox(
-                      height: AppConst.heightBetweenWidgets,
-                    ),
-                  if (!_isLogin)
-                    TextFormField(
-                      decoration: InputDecoration(
-                          labelText: tr('confirm_password_label'),
-                          fillColor: Colors.transparent,
-                          filled: true,
-                          isDense: true,
-                          prefixIcon: const Icon(Icons.password)),
-                      obscureText: true,
-                      controller: _confirmController,
-                      validator: (value) {
-                        if (value == null || _passwordController.text != value) {
-                          return tr('confirm_password_error');
-                        }
-                        return null;
-                      },
-                    ),
+                  // if (!_isLogin)
+                  //   const SizedBox(
+                  //     height: AppConst.heightBetweenWidgets,
+                  //   ),
+                  // if (!_isLogin)
+                  //   TextFormField(
+                  //     decoration: InputDecoration(
+                  //         labelText: tr('confirm_password_label'),
+                  //         fillColor: Colors.transparent,
+                  //         filled: true,
+                  //         isDense: true,
+                  //         prefixIcon: const Icon(Icons.password)),
+                  //     obscureText: true,
+                  //     controller: _confirmController,
+                  //     validator: (value) {
+                  //       if (value == null || _passwordController.text != value) {
+                  //         return tr('confirm_password_error');
+                  //       }
+                  //       return null;
+                  //     },
+                  //   ),
                   const SizedBox(
                     height: AppConst.heightBetweenWidgets,
                   ),

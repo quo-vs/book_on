@@ -1,8 +1,9 @@
-import 'package:book_on/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:meta/meta.dart';
+
+import '../models/user.dart';
 
 /// Thrown if during the sign up process if a failure occurs.
 class SignUpFailure implements Exception {}
@@ -15,9 +16,9 @@ class LogInWithGoogleFailure implements Exception {}
 /// Thrown during logout process if faliure
 class LogOutFailure implements Exception {}
 
-class AuthRepository {
+class AuthService {
 
-  AuthRepository({
+  AuthService({
     firebase_auth.FirebaseAuth? firebaseAuth,
     GoogleSignIn? googleSignIn,
   }) {

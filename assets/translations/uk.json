@@ -41,7 +41,7 @@
     "anErrorOccured": "Виникла помилка",
     "ok": "Гаразд",
     "addBook": "Добавити книгу",
-    "editBook": "Редагувати книгу",
+    "editBook": "Редагувати",
     "bookTitle": "Назва книги",
     "requiredField": "Обов'язкове поле",
     "author": "Автор",
@@ -65,7 +65,7 @@
     "day": "День",
     "changesNotSaved": "Зберегти зміни?",
     "deleteBook": "Видалити книгу?",
-    "editQuote": "Редагувати цитату",
+    "editQuote": "Редагувати",
     "share": "Поширити",
     "noBooks": "Книги відсутні",
     "yes": "Так",
@@ -88,5 +88,7 @@
     "manyBooks": "книги",
     "noInternetConnection": "Нема інтернет з'єднання",
     "noImage": "Нема зображення",
-    "pagesAmount": "Сторінок: {}"
+    "pagesAmount": "Сторінок: {}",
+    "quoteDeleted": "Цитата видалена",
+    "syncFirebase": "Синхронізуватись з хмарою"
 }

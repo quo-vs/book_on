@@ -13,7 +13,7 @@ import '../blocs/blocs.dart';
 import '../blocs/signup/signup_bloc.dart';
 import '../data/shared_prefs.dart';
 import '../providers/app_provider.dart';
-import '../repositories/auth_repository.dart';
+import 'services/auth_service.dart';
 import '../config/theme.dart';
 import '../screens/add_goal_screen.dart';
 import '../screens/edit_quotes.dart';
@@ -44,29 +44,29 @@ void main() async {
     supportedLocales: const [Locale('en'), Locale('uk')],
     path: 'assets/translations',
     fallbackLocale: const Locale('en'),
-    child: RepositoryProvider<AuthRepository>(
+    child: RepositoryProvider<AuthService>(
       create: (context) {
-        return AuthRepository();
+        return AuthService();
       },
       child: MultiBlocProvider(
         providers: [
           BlocProvider<AuthBloc>(
             create: (context) {
-              final authRepo = RepositoryProvider.of<AuthRepository>(context);
+              final authRepo = RepositoryProvider.of<AuthService>(context);
               return AuthBloc(authRepo)..add(AppStarted());
             },
           ),
           BlocProvider<LoginBloc>(
             create: (context) {
               final authBloc = BlocProvider.of<AuthBloc>(context);
-              final authRepo = RepositoryProvider.of<AuthRepository>(context);
+              final authRepo = RepositoryProvider.of<AuthService>(context);
               return LoginBloc(authBloc, authRepo);
             },
           ),
           BlocProvider<SignupBloc>(
             create: (context) {
               final authBloc = BlocProvider.of<AuthBloc>(context);
-              final authRepo = RepositoryProvider.of<AuthRepository>(context);
+              final authRepo = RepositoryProvider.of<AuthService>(context);
               return SignupBloc(authBloc, authRepo);
             },
           ),
@@ -103,11 +103,19 @@ class _AppState extends State<App> {
         themeMode: appProvider.mode,
         home: BlocBuilder<AuthBloc, AuthState>(
           builder: (ctx, state) {
+            if (state is AuthInitial || state is AuthLoading) {
+              return Scaffold(body: Center(child: CircularProgressIndicator(),));
+            }
+
             if (state is AuthAuthenticated) {
               return PageControllerScreen();
             }
 
-            return LoginScreen();
+            if (state is AuthNotAuthenticated) {
+              return LoginScreen();
+            }
+
+             return Scaffold(body:Center(child: CircularProgressIndicator(),));
           },
         ),
         routes: {

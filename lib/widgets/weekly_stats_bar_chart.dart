@@ -11,10 +11,7 @@ import '../widgets/statistic_chart.dart';
 class WeeklyBarChart extends StatefulWidget {
   final List<BookWithLog> booksData;
 
-  const WeeklyBarChart({
-    Key? key, 
-    required this.booksData
-  }) : super(key: key);
+  const WeeklyBarChart({Key? key, required this.booksData}) : super(key: key);
 
   @override
   State<WeeklyBarChart> createState() => _WeeklyBarChartState();
@@ -23,18 +20,24 @@ class WeeklyBarChart extends StatefulWidget {
 class _WeeklyBarChartState extends State<WeeklyBarChart> {
   late Color primaryColor;
   late Color accentColor;
-  
+  late List<BookQuantity> weekData;
+
   int touchedIndex = -1;
-  
+
   @override
   Widget build(BuildContext context) {
+    weekData = _createWeekChartData();
     primaryColor = Theme.of(context).primaryColor;
     accentColor = Theme.of(context).accentColor;
 
-    return BarChart(
-      mainBarData(),
-      swapAnimationDuration: const Duration(milliseconds: 900),
-    );
+    return weekData.isNotEmpty
+        ? BarChart(
+            mainBarData(),
+            swapAnimationDuration: const Duration(milliseconds: 900),
+          )
+        : Center(
+            child: Text(tr('noReadBookYet')),
+          );
   }
 
   BarChartGroupData makeGroupData(
@@ -50,14 +53,14 @@ class _WeeklyBarChartState extends State<WeeklyBarChart> {
       barRods: [
         BarChartRodData(
           y: isTouched ? y + 1 : y,
-          colors: isTouched ? [accentColor] : [ primaryColor],
+          colors: isTouched ? [accentColor] : [primaryColor],
           width: width,
           borderSide: isTouched
               ? BorderSide(color: accentColor.darken(), width: 1)
               : const BorderSide(color: Colors.white, width: 0),
           backDrawRodData: BackgroundBarChartRodData(
             show: true,
-            y: _createWeekChartData()
+            y: weekData
                 .reduce(
                     (b1, b2) => b1.booksQuantity > b2.booksQuantity ? b1 : b2)
                 .booksQuantity
@@ -75,7 +78,8 @@ class _WeeklyBarChartState extends State<WeeklyBarChart> {
 
     int daysOfWeek = now.weekday - 1;
     DateTime firstDay = DateTime(now.year, now.month, now.day - daysOfWeek);
-    DateTime lastDay = firstDay.add(const Duration(days: 6, hours: 23, minutes: 59));
+    DateTime lastDay =
+        firstDay.add(const Duration(days: 6, hours: 23, minutes: 59));
 
     //TODO: add prev and next week buttons
 
@@ -122,8 +126,7 @@ class _WeeklyBarChartState extends State<WeeklyBarChart> {
   }
 
   List<BarChartGroupData> showingGroups() {
-    var data = _createWeekChartData();
-    var result = data.map((bq) {
+    var result = weekData.map((bq) {
       switch (bq.day) {
         case 0:
           return makeGroupData(0, bq.booksQuantity.toDouble(),
@@ -193,7 +196,7 @@ class _WeeklyBarChartState extends State<WeeklyBarChart> {
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
                 ),
-                children: <TextSpan>[
+                children: [
                   TextSpan(
                     text: (rod.y - 1).toString(),
                     style: TextStyle(

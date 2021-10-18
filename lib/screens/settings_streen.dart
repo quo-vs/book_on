@@ -9,6 +9,8 @@ import '../providers/app_provider.dart';
 import '../utils/constants.dart';
 import '../screens/login_screen.dart';
 import '../utils/functions.dart';
+import '../blocs/blocs.dart';
+import '../services/auth_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   static const routeName = '/settings';
@@ -20,6 +22,11 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  late AuthService _authService;
+
+  _SettingsScreenState() {
+    _authService = AuthService();
+  }
   late List _items;
   var _isLoading = false;
 
@@ -41,12 +48,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
         'title': tr('about'),
         'function': () => showAbout(),
       },
-      {
-        'icon': Icons.logout,
-        'title': tr('logout'),
-        'function': () => _logout(),
-      },
     ];
+    if (_authService.isSignedIn()) {
+      _items.addAll([
+        {
+          'icon': Icons.sync,
+          'title': tr('syncFirebase'),
+          'function': _syncWithFirebase,
+        },
+        {
+          'icon': Icons.logout,
+          'title': tr('logout'),
+          'function': () => _logout(),
+        }
+      ]);
+    } else {
+      _items.add({
+        'icon': Icons.login,
+        'title': tr('login'),
+        'function': () => _login(),
+      });
+    }
     super.didChangeDependencies();
   }
 
@@ -62,8 +84,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: _isLoading
           ? const CircularProgressIndicator()
           : Container(
-            padding: const EdgeInsets.only(top: AppConst.heightBetweenWidgets),
-            child: ListView.separated(
+              padding:
+                  const EdgeInsets.only(top: AppConst.heightBetweenWidgets),
+              child: ListView.separated(
                 itemBuilder: (ctx, index) {
                   if (_items[index]['title'] == tr('darkMode')) {
                     return _buildThemeSwitch(_items[index]);
@@ -72,6 +95,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   if (_items[index]['title'] == tr('changeLanguage')) {
                     return _buildLanguageDropdown(
                         context, tr('changeLanguage'), _items[index]['icon']);
+                  }
+
+                  if (_authService.isSignedIn()) {
+                    if (_items[index]['title'] == tr('syncFirebase')) {
+                      return _buildSyncSwitch(context, _items[index]);
+                    }
                   }
 
                   return ListTile(
@@ -88,13 +117,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 physics: const NeverScrollableScrollPhysics(),
                 padding: const EdgeInsets.symmetric(horizontal: 10),
               ),
-          ),
+            ),
     );
   }
 
   _logout() {
     BlocProvider.of<AuthBloc>(context).add(LoggedOut());
     Functions.pushPageReplacement(context, const LoginScreen());
+  }
+
+  _login() {
+    BlocProvider.of<AuthBloc>(context).add(AppStarted());
+    Functions.pushPageReplacement(context, const LoginScreen());
+  }
+
+  Widget _buildSyncSwitch(BuildContext context, Map item) {
+    return SwitchListTile(
+      secondary: Icon(
+        item['icon'],
+      ),
+      title: Text(
+        item['title'],
+      ),
+      value: Provider.of<AppProvider>(context).syncWithCloud,
+      onChanged: (value) {
+        Provider.of<AppProvider>(context, listen: false)
+            .setSyncWithCloud(context, value);
+      },
+    );
   }
 
   Widget _buildThemeSwitch(Map item) {
@@ -153,14 +203,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  Future<void> _syncWithFirebase() {
+    return Future.delayed(Duration(seconds: 1));
+  }
+
   String language(String locale) {
-    switch(locale) {
-      case "uk": {
-        return tr('ukrainian');
-      }
-      case "en": {
-        return tr('english');
-      }
+    switch (locale) {
+      case "uk":
+        {
+          return tr('ukrainian');
+        }
+      case "en":
+        {
+          return tr('english');
+        }
       default:
         return tr('english');
     }

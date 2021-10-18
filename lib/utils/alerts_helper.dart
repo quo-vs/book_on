@@ -132,8 +132,8 @@ class AlertHelper {
         });
   }
 
-  static showOfflineAlert(BuildContext context) {
-    showDialog(
+  static Future<void> showOfflineAlert(BuildContext context) async {
+    await showDialog(
       context: context,
       builder: (_) {
         return AlertDialog(
