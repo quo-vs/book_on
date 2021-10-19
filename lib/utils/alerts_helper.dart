@@ -132,13 +132,13 @@ class AlertHelper {
         });
   }
 
-  static Future<void> showOfflineAlert(BuildContext context) async {
+  static Future<void> showErrorAlert(BuildContext context, String errorText) async {
     await showDialog(
       context: context,
       builder: (_) {
         return AlertDialog(
           title: Text(
-            tr('noInternetConnection'),
+            errorText
           ),
           actions: <Widget>[
             FlatButton(
@@ -152,5 +152,42 @@ class AlertHelper {
         );
       },
     );
+  }
+
+  static Future<bool> tooMachAmountOfPagesAlert(BuildContext context) async {
+    var _isRead = false;
+
+    await Alert(
+      context: context,
+      type: AlertType.warning,
+      title: tr("bookWasRead"),
+      buttons: [
+        DialogButton(
+          child: Text(
+            tr("yes"),
+            style: const TextStyle(color: Colors.white, fontSize: 14),
+          ),
+          onPressed: () {
+            _isRead = true;
+            
+            Navigator.of(context).pop();
+          },
+          color: Theme.of(context).errorColor 
+        ),
+        DialogButton(
+          child: Text(
+            tr("no"),
+            style: const TextStyle(color: Colors.white, fontSize: 14),
+          ),
+          onPressed: () {
+            _isRead = false;
+            Navigator.of(context).pop();
+          },
+           color: Theme.of(context).primaryColor 
+        ),
+      ],
+    ).show();
+
+    return _isRead;
   }
 }

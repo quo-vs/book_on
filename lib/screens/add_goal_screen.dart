@@ -22,6 +22,27 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
   final _mounthlyAmountController = TextEditingController();
   final _yearlyAmountController = TextEditingController();
   var _isLoading = false;
+  var _isAddingMode = false;
+  GoalType? goalType;
+  GoalMode? mode;
+
+  @override
+  void didChangeDependencies() async {
+    super.didChangeDependencies();
+
+    final Arguments? args = ModalRoute.of(context)?.settings.arguments as Arguments?;
+    if (args != null) {
+      if (GoalType.values.contains(args.type) && GoalMode.values.contains(args.mode)) {
+        setState(() {
+          goalType = args.type;
+          mode = args.mode;
+        });
+      }
+      _isAddingMode = false;
+    } else {
+      _isAddingMode = true;
+    }
+  }
 
   Future<void> _saveForm() async {
     final isValid = _formKey.currentState?.validate();
@@ -35,13 +56,16 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
 
     try {
       if (_dailyAmountController.text.isNotEmpty) {
-        await _addGoalOrUpdate(int.tryParse(_dailyAmountController.text) ?? 0, GoalType.Day);
+        await _addGoalOrUpdate(
+            int.tryParse(_dailyAmountController.text) ?? 0, GoalType.Day);
       }
       if (_mounthlyAmountController.text.isNotEmpty) {
-        await _addGoalOrUpdate(int.tryParse(_mounthlyAmountController.text) ?? 0, GoalType.Mounth);
+        await _addGoalOrUpdate(
+            int.tryParse(_mounthlyAmountController.text) ?? 0, GoalType.Mounth);
       }
       if (_yearlyAmountController.text.isNotEmpty) {
-        await _addGoalOrUpdate(int.tryParse(_yearlyAmountController.text) ?? 0, GoalType.Year);
+        await _addGoalOrUpdate(
+            int.tryParse(_yearlyAmountController.text) ?? 0, GoalType.Year);
       }
     } catch (error) {
       await showDialog<Null>(
@@ -60,14 +84,13 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
         ),
       );
     }
-    
+
     setState(() {
       _isLoading = false;
     });
     Navigator.of(context).pop();
   }
 
-  
   Future<void> _addGoalOrUpdate(int amount, GoalType type) async {
     var dao = Provider.of<GoalsDao>(context, listen: false);
     var existsGoal = await dao.existsGoal(type);
@@ -76,24 +99,30 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
       await dao.updateGoal(updateEntity);
       return;
     }
-     var newGoal = GoalsCompanion.insert(
-        goalAmount: amount,
-        createdAt: DateTime.now(),
-        type: type);
-      
+    var newGoal = GoalsCompanion.insert(
+        goalAmount: amount, createdAt: DateTime.now(), type: type);
+
     await dao.insertGoal(newGoal);
+  }
+
+  Widget _buildTitle() {
+    if (mode == GoalMode.Edit) {
+      return Text(tr('updateGoal'));
+    }
+    if (mode == GoalMode.Set) {
+      return Text(tr('setGoal'));
+    }
+
+    return Text(tr('addGoals'));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(tr('addGoals')),
+        title: _buildTitle(),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.save), 
-            onPressed: _saveForm
-          ),
+          IconButton(icon: const Icon(Icons.save), onPressed: _saveForm),
         ],
       ),
       body: Padding(
@@ -102,7 +131,7 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
           key: _formKey,
           child: ListView(
             children: [
-              TextFormField(
+              if (_isAddingMode || goalType == GoalType.Day) TextFormField(
                 decoration: InputDecoration(
                   labelText: tr('pagesGoalLabel'),
                   fillColor: Colors.transparent,
@@ -114,7 +143,7 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
               const SizedBox(
                 height: AppConst.heightBetweenWidgets,
               ),
-              TextFormField(
+               if (_isAddingMode || goalType == GoalType.Mounth) TextFormField(
                 decoration: InputDecoration(
                   labelText: tr('booksMonthlyLabel'),
                   fillColor: Colors.transparent,
@@ -126,7 +155,7 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
               const SizedBox(
                 height: AppConst.heightBetweenWidgets,
               ),
-              TextFormField(
+               if (_isAddingMode || goalType == GoalType.Year) TextFormField(
                 decoration: InputDecoration(
                   labelText: tr('booksYearlyLabel'),
                   fillColor: Colors.transparent,
@@ -141,4 +170,16 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
       ),
     );
   }
+}
+
+class Arguments {
+  final GoalType type;
+  final GoalMode mode;
+ 
+  Arguments(this.type, this.mode);
+}
+
+enum GoalMode {
+  Set, 
+  Edit
 }

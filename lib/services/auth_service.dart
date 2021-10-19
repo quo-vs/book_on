@@ -4,17 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:meta/meta.dart';
 
 import '../models/user.dart';
-
-/// Thrown if during the sign up process if a failure occurs.
-class SignUpFailure implements Exception {}
-
-/// Thrown during the login process if a faliure occurs.
-class LoginWithEmailAndPasswordFailure implements Exception {}
-
-class LogInWithGoogleFailure implements Exception {}
-
-/// Thrown during logout process if faliure
-class LogOutFailure implements Exception {}
+import '../exceptions/auth_exception.dart';
 
 class AuthService {
 
@@ -55,29 +45,29 @@ class AuthService {
 
   /// Creates a new user with provided [email] and [password]
   /// 
-  /// Throws a [SignUpFailure] if an exception occurs.
+  /// Throws a [AuthenticationException] if an exception occurs.
   Future<void> signUp({required String email, required String password}) async {
       try {
         await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, 
           password: password
         );
-      } on Exception {
-        throw SignUpFailure();
+      } catch (err) {
+        throw AuthenticationException(message: err.toString());
       }
   }
 
   /// Signs in user with provided [email] and [password].
   /// 
-  /// Throws a [LoginWithEmailAndPasswordFailure] if an exception occurs.
+  /// Throws a [AuthenticationException] if an exception occurs.
   Future<void> login({required String email, required String password}) async {
     try {
       await _firebaseAuth.signInWithEmailAndPassword(
         email: email, 
         password: password
       );
-    } on Exception {
-      throw SignUpFailure();
+    } catch (err) {
+      throw AuthenticationException(message: err.toString());
     }
   } 
 
@@ -87,8 +77,8 @@ class AuthService {
         _firebaseAuth.signOut(),
         _googleSignIn.signOut(),
       ]);
-    } on Exception {
-      throw LogOutFailure();
+    } catch (err) {
+      throw AuthenticationException(message: err.toString());
     }
   }
 
@@ -116,8 +106,8 @@ class AuthService {
       }
 
       await _firebaseAuth.signInWithCredential(credential);
-    } catch (_) {
-      throw LogInWithGoogleFailure();
+    } catch (err) {
+       throw AuthenticationException(message: err.toString());
     }
   }
 

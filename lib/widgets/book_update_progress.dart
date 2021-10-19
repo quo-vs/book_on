@@ -9,6 +9,7 @@ import '../data/database.dart';
 import '../widgets/adding_book_card.dart';
 import '../utils/constants.dart';
 import '../widgets/book_log_form_widget.dart';
+import '../utils/alerts_helper.dart';
 
 class BookUpdateProgressAlert extends StatefulWidget {
   final Book bookEntry;
@@ -28,6 +29,7 @@ class _BookUpdateProgressAlertState extends State<BookUpdateProgressAlert> {
   final _currentPageController = TextEditingController();
   final _dateController = TextEditingController();
   final loginFormKey = GlobalKey<FormState>();
+  late BookLog? currentBookLog;
 
   @override
   void initState() {
@@ -38,6 +40,7 @@ class _BookUpdateProgressAlertState extends State<BookUpdateProgressAlert> {
         _currentPageController.text =
             log?.currentPage != null ? log!.currentPage.toString() : '';
         _dateController.text = log!.sessionDate.toString().substring(0, 10);
+        currentBookLog = log;
       });
     }
   }
@@ -49,15 +52,24 @@ class _BookUpdateProgressAlertState extends State<BookUpdateProgressAlert> {
     DateTime sessionDate = _dateController.text.isNotEmpty
         ? DateTime.parse(_dateController.text).add(Duration(minutes: 1))
         : DateTime.now();
+    
+    var finishedDate = _isFinished == true
+            ? moor.Value(sessionDate)
+            : const moor.Value(null);
+    var currentPage = int.tryParse(_currentPageController.text) ?? 0;
+    if (currentPage >= widget.bookEntry.pagesAmount) {
+      currentPage = widget.bookEntry.pagesAmount;
+     var isBookFinished = await AlertHelper.tooMachAmountOfPagesAlert(context);
+     if (isBookFinished) {
+       _isFinished = true;
+       finishedDate = moor.Value(sessionDate);
+     }
+    }
     var bookLog = BookLogsCompanion.insert(
         sessionDate: sessionDate,
-        currentPage: _currentPageController.text.isNotEmpty
-            ? moor.Value(int.parse(_currentPageController.text))
-            : const moor.Value(0),
+        currentPage: moor.Value(currentPage),
         isFinished: _isFinished,
-        finishedDate: _isFinished == true
-            ? moor.Value(sessionDate)
-            : const moor.Value(null),
+        finishedDate: finishedDate,
         updatedAt: DateTime.now());
 
     var insertedBookLogId = await bookLogsDao.insertBookLog(bookLog);

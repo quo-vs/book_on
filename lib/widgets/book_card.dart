@@ -63,11 +63,16 @@ class BookCard extends StatelessWidget {
                   child: Hero(
                     tag: imgTag,
                     child: entry != null && entry!.image.isNotEmpty
-                        ? Column(
-                            children: [
-                              Image.memory(entry!.image),
-                            ],
-                          )
+                        ? Container(
+                            width: 130,
+                            height: 170,
+                            child:
+                              Image.memory(
+                                entry!.image,
+                                fit: BoxFit.cover,
+                              ),
+                        )
+                          
                         : Container(
                             width: 130,
                             height: 170,

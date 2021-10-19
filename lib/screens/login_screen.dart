@@ -6,6 +6,7 @@ import 'package:easy_localization/easy_localization.dart';
 import '../blocs/blocs.dart';
 import '../widgets/logo.dart';
 import '../widgets/sign_in_form.dart';
+import '../blocs/auth/auth.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -25,11 +26,10 @@ class LoginScreen extends StatelessWidget {
                 const LogoImage(),
                 BlocBuilder<AuthBloc, AuthState>(
                   builder: (ctx, state) {
-                    final authBloc = BlocProvider.of<AuthBloc>(context);
-
                     if (state is AuthNotAuthenticated) {
                       return const SignInForm();
                     }
+                    
                     if (state is AuthFailure) {
                       return Center(
                         child: Column(
@@ -39,7 +39,7 @@ class LoginScreen extends StatelessWidget {
                             Text(state.message),
                             FlatButton(
                               onPressed: () {
-                                authBloc.add(AppStarted());
+                                BlocProvider.of<AuthBloc>(context).add(AppStarted());
                               },
                               child: Text(tr('retry')),
                               textColor: Theme.of(context).primaryColor,

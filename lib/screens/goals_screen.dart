@@ -21,21 +21,28 @@ class GoalsScreen extends StatefulWidget {
 class _GoalsScreenState extends State<GoalsScreen> {
   List<bool> _isSelected = [true, false, false];
   var _currentIndex = 0;
+  var _goalsExists = false;
 
   @override
   Widget build(BuildContext context) {
+    var goalsDao = Provider.of<GoalsDao>(context);
+    goalsDao.getGoals().then((goals) {
+      _goalsExists = goals.isEmpty ? true : false;
+    });
+
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.add),
-          onPressed: () {
-            Functions.pushPageNamed(context, AddGoalScreen.routeName);
-          },
-        ),
+        leading: _goalsExists == true
+            ? IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: () {
+                  Functions.pushPageNamed(context, AddGoalScreen.routeName);
+                })
+            : null,
         title: Text(tr('goals')),
       ),
       body: StreamBuilder(
-        stream: Provider.of<GoalsDao>(context).watchAllGoals(),
+        stream: goalsDao.watchAllGoals(),
         builder: (ctx, AsyncSnapshot<List<Goal>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -48,6 +55,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
               child: Text(tr('addGoals')),
             );
           }
+          
           return StreamBuilder(
             stream: Provider.of<BooksDao>(context, listen: false)
                 .watchBookWithLogs(),
@@ -58,56 +66,68 @@ class _GoalsScreenState extends State<GoalsScreen> {
                 );
               }
 
-              return Column(
-                children: [
-                  const SizedBox(
-                    height: AppConst.heightBetweenWidgets,
-                  ),
-                  DefaultTabController(
-                    length: 3,
-                    child: ToggleButtons(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Text(tr('day')),
+              return SingleChildScrollView(
+                child: Container(
+                  height: MediaQuery.of(context).size.height - 140,
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: AppConst.heightBetweenWidgets,
+                      ),
+                      DefaultTabController(
+                        length: 3,
+                        child: ToggleButtons(
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: Text(tr('day')),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: Text(tr('month')),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: Text(tr('year')),
+                            ),
+                          ],
+                          onPressed: (int index) {
+                            setState(() {
+                              for (int buttonIndex = 0;
+                                  buttonIndex < _isSelected.length;
+                                  buttonIndex++) {
+                                if (buttonIndex == index) {
+                                  _isSelected[buttonIndex] = true;
+                                  _currentIndex = buttonIndex;
+                                } else {
+                                  _isSelected[buttonIndex] = false;
+                                }
+                              }
+                            });
+                          },
+                          isSelected: _isSelected,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Text(tr('month')),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Text(tr('year')),
-                        ),
-                      ],
-                      onPressed: (int index) {
-                        setState(() {
-                          for (int buttonIndex = 0;
-                              buttonIndex < _isSelected.length;
-                              buttonIndex++) {
-                            if (buttonIndex == index) {
-                              _isSelected[buttonIndex] = true;
-                              _currentIndex = buttonIndex;
-                            } else {
-                              _isSelected[buttonIndex] = false;
-                            }
-                          }
-                        });
-                      },
-                      isSelected: _isSelected,
-                    ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      _buildGoalText(
+                          GoalType.values[_currentIndex], snapshot.data!),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Container(
+                        child: _buildRadialGaugeWidget(
+                            GoalType.values[_currentIndex],
+                            snapshot.data!,
+                            snapshotBooks.data),
+                      )
+                    ],
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  _buildGoalText(
-                      GoalType.values[_currentIndex], snapshot.data!),
-                  SizedBox(
-                    height: 50,
-                  ),
-                  _buildRadialGaugeWidget(GoalType.values[_currentIndex],
-                      snapshot.data!, snapshotBooks.data)
-                ],
+                ),
               );
             },
           );
@@ -119,7 +139,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
   Widget _buildGoalText(GoalType goalType, List<Goal> goals) {
     var goal =
         goals.where((goal) => goal.type == GoalType.values[_currentIndex]);
-    if (goal.iterator.moveNext()) {
+    if (goal.iterator.moveNext() && goal.first.goalAmount > 0) {
       switch (goalType) {
         case GoalType.Day:
           return Text(
@@ -136,6 +156,16 @@ class _GoalsScreenState extends State<GoalsScreen> {
     return Text(tr("noGoalSet"));
   }
 
+  void _updateGoal(GoalType type) {
+    Navigator.of(context).pushNamed(AddGoalScreen.routeName,
+        arguments: Arguments(type, GoalMode.Edit));
+  }
+
+  void _setGoal(GoalType type) {
+    Navigator.of(context).pushNamed(AddGoalScreen.routeName,
+        arguments: Arguments(type, GoalMode.Set));
+  }
+
   Widget _buildRadialGaugeWidget(
       GoalType goalType, List<Goal> goals, List<BookWithLog>? books) {
     var goal =
@@ -145,44 +175,54 @@ class _GoalsScreenState extends State<GoalsScreen> {
         case GoalType.Day:
           {
             num readPagesToday = Functions.getPageAmountReadToday(books);
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: RadialGaugeWidget(
-                goalAmount: goal.first.goalAmount,
-                readStateAmount: readPagesToday,
-              ),
-            );
+            return _buildRadialGaugeItem(goal.first, readPagesToday);
           }
 
         case GoalType.Mounth:
           {
             int readBooksThisMonth = Functions.getBooksReadThisMonth(books);
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: RadialGaugeWidget(
-                goalAmount: goal.first.goalAmount,
-                readStateAmount: readBooksThisMonth,
-              ),
-            );
+            return _buildRadialGaugeItem(goal.first, readBooksThisMonth);
           }
         case GoalType.Year:
           {
             int readBooksThisYear = Functions.getBooksReadThisYear(books);
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: RadialGaugeWidget(
-                goalAmount: goal.first.goalAmount,
-                readStateAmount: readBooksThisYear,
-              ),
-            );
+            return _buildRadialGaugeItem(goal.first, readBooksThisYear);
           }
       }
     }
     return Center(
-      child: Text('No goal set'),
-    );
+        child: FlatButton(
+      onPressed: () {
+        _setGoal(GoalType.values[_currentIndex]);
+      },
+      child: Text(
+        tr('setGoal'),
+      ),
+    ));
   }
 
+  Column _buildRadialGaugeItem(Goal goal, num readPagesToday) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: RadialGaugeWidget(
+            goalAmount: goal.goalAmount,
+            readStateAmount: readPagesToday,
+          ),
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        FlatButton(
+          onPressed: () {
+            _updateGoal(GoalType.values[_currentIndex]);
+          },
+          child: Text(tr('updateGoal')),
+        ),
+      ],
+    );
+  }
 }
 
 class RadialGaugeWidget extends StatelessWidget {
@@ -199,7 +239,8 @@ class RadialGaugeWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return SfRadialGauge(
       enableLoadingAnimation: true,
-      animationDuration: Duration(milliseconds: 1200).inMilliseconds.toDouble(),
+      animationDuration:
+          const Duration(milliseconds: 1200).inMilliseconds.toDouble(),
       axes: [
         RadialAxis(
           minimum: 0,

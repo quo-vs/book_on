@@ -132,6 +132,9 @@ class _BookLogFormWidgetState extends State<BookLogFormWidget> {
         controller: widget.dateController,
         textAlign: widget.editBookMode ? TextAlign.start : TextAlign.end,
         onTap: () async {
+          if (isFinishedCheckbox != null && isFinishedCheckbox == true && widget.editBookMode) {
+            return;
+          }
           var date = await showDatePicker(
             context: context,
             initialDate: widget.dateController.text.isNotEmpty
@@ -156,6 +159,9 @@ class _BookLogFormWidgetState extends State<BookLogFormWidget> {
     return TextFormField(
       style: widget.editBookMode ? null : const TextStyle(fontSize: 12),
       textAlign: widget.editBookMode ? TextAlign.start : TextAlign.end,
+      readOnly: (isFinishedCheckbox != null && isFinishedCheckbox == true && widget.editBookMode) 
+        ? true 
+        : false,
       keyboardType: const TextInputType.numberWithOptions(decimal: false),
       validator: (value) {
         if (value != null && int.parse(value) > widget.pagesAmount) {
@@ -164,7 +170,7 @@ class _BookLogFormWidgetState extends State<BookLogFormWidget> {
         return null;
       },
       controller: widget.currentPageController,
-      decoration: widget.editBookMode
+      decoration: widget.editBookMode == true
           ? InputDecoration(
               labelText: tr('setCurrentPage'),
               fillColor: Colors.transparent,

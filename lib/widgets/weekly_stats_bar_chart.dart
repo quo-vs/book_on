@@ -30,13 +30,13 @@ class _WeeklyBarChartState extends State<WeeklyBarChart> {
     primaryColor = Theme.of(context).primaryColor;
     accentColor = Theme.of(context).accentColor;
 
-    return weekData.isNotEmpty
+    return weekData.any((w) => w.booksQuantity > 1)
         ? BarChart(
             mainBarData(),
             swapAnimationDuration: const Duration(milliseconds: 900),
           )
         : Center(
-            child: Text(tr('noReadBookYet')),
+            child: Text(tr('noReadBookThisWeekYet')),
           );
   }
 

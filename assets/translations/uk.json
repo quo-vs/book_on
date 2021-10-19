@@ -7,10 +7,12 @@
     "retry": "Сробувати знову",
     "email_label": "E-mail адреса",
     "email_required_error": "E-mail є обов'язковим полем",
+    "email_bad_format_error": "Не правильний формат E-mail ",
     "password_label": "Пароль",
     "password_required_error": "Пароль є обов'язковим полем",
     "confirm_password_label": "Підтвердіть пароль",
     "confirm_password_error": "Паролі повинні бути однакові",
+    "password_min_lenght_error" : "Мінімум 6 символів",
     "loading": "Зачекайте...",
     "settings": "Налаштування",
     "books": "Книги",
@@ -30,7 +32,8 @@
     "isFinished": "Прочитана?",
     "save": "Зберегти",
     "statistics": "Статистика",
-    "noReadBookYet": "Ще немає вашої читацької активності",
+    "noReadBookYet": "Ще немає читацької активності",
+    "noReadBookThisWeekYet": "Ще немає прочитаних книг цього тижня",
     "monthStatistic": "Статистика за місяць",
     "weekStatistic": "Статистика за тиждень",
     "total": "Всього",
@@ -90,5 +93,8 @@
     "noImage": "Нема зображення",
     "pagesAmount": "Сторінок: {}",
     "quoteDeleted": "Цитата видалена",
-    "syncFirebase": "Синхронізуватись з хмарою"
+    "syncFirebase": "Синхронізуватись з хмарою",
+    "updateGoal": "Оновити ціль",
+    "setGoal": "Задати ціль",
+    "bookWasRead": "Ви дочитали книгу?"
 }

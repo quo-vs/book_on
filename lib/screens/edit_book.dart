@@ -72,13 +72,13 @@ class _EditBookScreenState extends State<EditBookScreen> {
         _editedBook = _editedBook.copyWith(
             id: moor.Value(book.id),
             image: moor.Value(book.image),
-            bookLogId:
-                book.bookLogId != null ? moor.Value(book.bookLogId) : null);
+            pagesAmount: moor.Value(book.pagesAmount),
+            bookLogId: book.bookLogId != null ? moor.Value(book.bookLogId) : null);
 
         BookLog? bookLog;
         if (book.bookLogId != null) {
           var logsDao = Provider.of<BookLogsDao>(context, listen: false);
-          bookLog = await logsDao.findBookLogById(bookId);
+          bookLog = await logsDao.findBookLogById(book.bookLogId!);
           if (bookLog != null) {
             _editedBookLog = _editedBookLog.copyWith(
               currentPage: moor.Value(bookLog.currentPage),
@@ -102,6 +102,8 @@ class _EditBookScreenState extends State<EditBookScreen> {
 
           _isLoading = false;
           _isEditMode = true;
+
+           _isFinished = bookLog != null ? bookLog.isFinished : false;
         });
       }
     }
@@ -404,8 +406,7 @@ class _EditBookScreenState extends State<EditBookScreen> {
                                           _editedBook.pagesAmount.value,
                                       bookLogId: _editedBook.bookLogId.value,
                                       dateController: _dateController,
-                                      currentPageController:
-                                          _currentPageController,
+                                      currentPageController: _currentPageController,
                                       isFinished: _isFinished,
                                       isFinishedHandler: _setIsFinished,
                                       editBookMode: true,

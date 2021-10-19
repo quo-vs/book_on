@@ -10,10 +10,9 @@ import '../blocs/auth/auth_bloc.dart';
 import '../blocs/auth/auth_event.dart';
 import '../blocs/auth/auth_state.dart';
 import '../blocs/blocs.dart';
-import '../blocs/signup/signup_bloc.dart';
 import '../data/shared_prefs.dart';
 import '../providers/app_provider.dart';
-import 'services/auth_service.dart';
+import '../services/auth_service.dart';
 import '../config/theme.dart';
 import '../screens/add_goal_screen.dart';
 import '../screens/edit_quotes.dart';
@@ -54,20 +53,6 @@ void main() async {
             create: (context) {
               final authRepo = RepositoryProvider.of<AuthService>(context);
               return AuthBloc(authRepo)..add(AppStarted());
-            },
-          ),
-          BlocProvider<LoginBloc>(
-            create: (context) {
-              final authBloc = BlocProvider.of<AuthBloc>(context);
-              final authRepo = RepositoryProvider.of<AuthService>(context);
-              return LoginBloc(authBloc, authRepo);
-            },
-          ),
-          BlocProvider<SignupBloc>(
-            create: (context) {
-              final authBloc = BlocProvider.of<AuthBloc>(context);
-              final authRepo = RepositoryProvider.of<AuthService>(context);
-              return SignupBloc(authBloc, authRepo);
             },
           ),
         ],

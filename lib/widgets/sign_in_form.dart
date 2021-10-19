@@ -8,15 +8,12 @@ import 'package:connectivity/connectivity.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../blocs/login/login_bloc.dart';
-import '../blocs/login/login_event.dart';
-import '../blocs/signup/signup_bloc.dart';
-import '../blocs/signup/signup_event.dart';
 import '../widgets/auth_buttom_row.dart';
 import '../utils/constants.dart';
 import '../utils/alerts_helper.dart';
 import '../blocs/auth/auth.dart';
 import '../blocs/auth/auth_bloc.dart';
+import '../utils/functions.dart';
 
 class SignInForm extends StatefulWidget {
   const SignInForm({Key? key}) : super(key: key);
@@ -61,8 +58,7 @@ class _SignInFormState extends State<SignInForm> {
 
   @override
   Widget build(BuildContext context) {
-    final _loginBloc = BlocProvider.of<LoginBloc>(context);
-    final _signUpBloc = BlocProvider.of<SignupBloc>(context);
+    final _authBloc = BlocProvider.of<AuthBloc>(context);
 
     Future<bool> isOffline() async {
       var result = await _connectivity.checkConnectivity();
@@ -71,11 +67,11 @@ class _SignInFormState extends State<SignInForm> {
 
     _onLoginButtonPressed() async {
       if (await isOffline()) {
-        AlertHelper.showOfflineAlert(context);
+        await AlertHelper.showErrorAlert(context, tr('noInternetConnection'));
         return;
       }
       if (_key.currentState!.validate()) {
-        _loginBloc.add(LoginWithEmailButtonPressed(
+        _authBloc.add(LoginWithEmailButtonPressed(
             email: _emailController.text, password: _passwordController.text));
       } else {
         setState(() {
@@ -86,11 +82,11 @@ class _SignInFormState extends State<SignInForm> {
 
     _onSignUpButtonPressed() async {
       if (await isOffline()) {
-        AlertHelper.showOfflineAlert(context);
+        await AlertHelper.showErrorAlert(context, tr('noInternetConnection'));
         return;
       }
       if (_key.currentState!.validate()) {
-        _signUpBloc.add(SignUpWithEmailButtonPressed(
+        _authBloc.add(SignUpWithEmailButtonPressed(
             email: _emailController.text, password: _passwordController.text));
       } else {
         setState(() {
@@ -101,11 +97,11 @@ class _SignInFormState extends State<SignInForm> {
 
     _onAnonymousButtonPressed() async {
       if (await isOffline()) {
-        await AlertHelper.showOfflineAlert(context);
+        await AlertHelper.showErrorAlert(context, tr('noInternetConnection'));
         final _authBloc = BlocProvider.of<AuthBloc>(context);
         _authBloc.add(LoggedIn(displayName: 'Unknown'));
       } else {
-        _loginBloc.add(LoginAnonymouslyButtonPressed());
+        _authBloc.add(LoginAnonymouslyButtonPressed());
       }
     }
 
@@ -172,6 +168,9 @@ class _SignInFormState extends State<SignInForm> {
                       if (value == null) {
                         return tr('email_required_error');
                       }
+                      if (!Functions.isEmail(value)) {
+
+                      }
                       return null;
                     },
                   ),
@@ -190,6 +189,9 @@ class _SignInFormState extends State<SignInForm> {
                     validator: (value) {
                       if (value == null) {
                         return tr('password_required_error');
+                      }
+                      if (value.length < 6) {
+                        return tr('password_min_lenght_error');
                       }
                       return null;
                     },
@@ -285,11 +287,11 @@ class _GoogleLoginButton extends StatelessWidget {
         icon: const Icon(FontAwesomeIcons.google, color: Colors.white),
         onPressed: () async {
           if (await isOfflineHandler()) {
-            AlertHelper.showOfflineAlert(context);
+            await  AlertHelper.showErrorAlert(context, tr('noInternetConnection'));
             return;
           }
 
-          BlocProvider.of<SignupBloc>(context)
+          BlocProvider.of<AuthBloc>(context)
               .add(SignupWithGoogleButtonPressed());
         });
   }

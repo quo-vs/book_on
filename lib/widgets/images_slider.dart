@@ -87,7 +87,10 @@ class _ImagesSliderState extends State<ImagesSlider> {
                   horizontal: 0,
                   vertical: 0,
                 ),
-                child: Image.asset(imageUri),
+                child: Image.asset(
+                  imageUri,
+                  fit: BoxFit.cover,
+                ),
               );
             },
           ).toList(),

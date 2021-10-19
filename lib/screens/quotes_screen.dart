@@ -61,7 +61,7 @@ class _QuotesSctreenState extends State<QuotesSctreen> {
                         snapshot.data!.removeAt(index);
                       });
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text(tr('quoteDeleted')),
+                        content: Text(tr('quoteDeleted'), textAlign: TextAlign.end,),
                         backgroundColor: Theme.of(context).errorColor,
                       ));
                     }
