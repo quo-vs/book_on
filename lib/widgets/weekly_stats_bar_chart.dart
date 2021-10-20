@@ -30,7 +30,7 @@ class _WeeklyBarChartState extends State<WeeklyBarChart> {
     primaryColor = Theme.of(context).primaryColor;
     accentColor = Theme.of(context).accentColor;
 
-    return weekData.any((w) => w.booksQuantity > 1)
+    return weekData.any((w) => w.booksQuantity > 0)
         ? BarChart(
             mainBarData(),
             swapAnimationDuration: const Duration(milliseconds: 900),

@@ -27,7 +27,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
   Widget build(BuildContext context) {
     var goalsDao = Provider.of<GoalsDao>(context);
     goalsDao.getGoals().then((goals) {
-      _goalsExists = goals.isEmpty ? true : false;
+      _goalsExists = goals.isEmpty ? false : true;
     });
 
     return Scaffold(
