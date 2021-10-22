@@ -2,6 +2,9 @@
 
 An application for tracking and saving read books
 
+# Run locally
+To run application locally you need to add your own firebase congiguration file **google-services.json** into the module (app-level) directory of your android app.
+
 # Tech Stack
 * Provider  and BLoC state-management patterns
 * Firebase Authentication
