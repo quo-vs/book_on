@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:fl_chart/src/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:jiffy/jiffy.dart';
 
 import '../data/database.dart';
 import '../utils/constants.dart';
@@ -21,6 +22,38 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
   late List<BookQuantity> _chartData;
   late Color accentColor;
   late Color primaryColor;
+  List<bool> _selectedButtons = [true, false];
+  late DateTime _dateToBuildChart;
+
+  void _setPreviousMonthDate() {
+    var date = Jiffy(_dateToBuildChart).subtract(months: 1).dateTime;
+    // show month stats only for this year
+    if (DateTime.now().year == date.year) {
+      setState(() {
+        _dateToBuildChart = date;
+
+        _chartData = _createMonthChartData();
+        _chartData.sort(dayCompare);
+      });
+    }
+  }
+
+  void _setNextMonthDate() {
+    var date = Jiffy(_dateToBuildChart).add(months: 1).dateTime;
+    if (DateTime.now().month != _dateToBuildChart.month) {
+      setState(() {
+        _dateToBuildChart = date;
+        _chartData = _createMonthChartData();
+        _chartData.sort(dayCompare);
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _dateToBuildChart = DateTime.now();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +70,30 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
     return Column(
       children: [
         Container(
+          margin: const EdgeInsets.symmetric(horizontal: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              OutlineButton(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(tr('previous')),
+                onPressed: () {
+                  _setPreviousMonthDate();
+                },
+              ),
+              if (_dateToBuildChart.month != DateTime.now().month)
+                OutlineButton(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(tr('next')),
+                  onPressed: () {
+                    _setNextMonthDate();
+                  },
+                ),
+            ],
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.only(top: 15),
           height: 200,
           child: LineChart(
             monthLineChartData,
@@ -48,7 +105,7 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
           height: AppConst.heightBetweenWidgets,
         ),
         Text(
-          '${tr('total')}: $total',
+          '${tr('total')} in ${Functions.numberToMonth(_dateToBuildChart.month)}: $total',
           style: const TextStyle(fontSize: 16),
         ),
       ],
@@ -70,21 +127,23 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
   }
 
   List<BookQuantity> _createMonthChartData() {
-    var now = DateTime.now();
-    var firstDayOfTheMonth = DateTime(now.year, now.month, 1);
-    var lastDayOfTheMonth = DateTime(now.year, now.month + 1, 0);
+    var firstDayOfTheMonth =
+        DateTime(_dateToBuildChart.year, _dateToBuildChart.month, 1);
+    var lastDayOfTheMonth =
+        DateTime(_dateToBuildChart.year, _dateToBuildChart.month + 1, 0);
 
     var monthStatsData = widget.booksData.map((b) => b.log).where((b) {
-      return b.finishedDate != null 
-        && b.finishedDate!.isAfter(firstDayOfTheMonth.subtract(Duration(days: 1))) 
-        && b.finishedDate!.isBefore(lastDayOfTheMonth.add(Duration(days: 1)));
+      return b.finishedDate != null &&
+          b.finishedDate!
+              .isAfter(firstDayOfTheMonth.subtract(const Duration(days: 1))) &&
+          b.finishedDate!
+              .isBefore(lastDayOfTheMonth.add(const Duration(days: 1)));
     }).toList();
     monthStatsData.sort((a, b) {
       return a.finishedDate!.compareTo(b.finishedDate!);
     });
 
     List<BookQuantity> data = [];
-    
 
     data.add(_addChartData(firstDayOfTheMonth, monthStatsData));
     monthStatsData.forEach((element) {
@@ -105,7 +164,9 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
         lineBarsData: monthLineBarsData,
         clipData: FlClipData.all(),
         minX: 1,
-        maxX: DateTime(DateTime.now().year, DateTime.now().month + 1, 0).day.toDouble(),
+        maxX: DateTime(_dateToBuildChart.year, _dateToBuildChart.month + 1, 0)
+            .day
+            .toDouble(),
         maxY: _chartData
                 .reduce(
                     (b1, b2) => b1.booksQuantity > b2.booksQuantity ? b1 : b2)
@@ -124,20 +185,20 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
       );
 
   LineTouchTooltipData get lineTouchTooltipData => LineTouchTooltipData(
-    tooltipBgColor: Colors.primaries.last,
-    getTooltipItems: (spot) {
-      var booksQuantity = spot[0].y.toInt();
-      var quantityText = '$booksQuantity ${booksQuantity == 1 ? tr("oneBook") : tr("manyBooks")}';
-      var dateText = '${spot[0].x.toInt()}.${DateTime.now().month}';
-      var tooltipText = '$quantityText\n$dateText';
-      return [
-        LineTooltipItem(
-          "$tooltipText", 
-          TextStyle(color: Colors.black),
-        ),
-      ];
-    }
-  );
+      tooltipBgColor: Colors.primaries.last,
+      getTooltipItems: (spot) {
+        var booksQuantity = spot[0].y.toInt();
+        var quantityText =
+            '$booksQuantity ${booksQuantity == 1 ? tr("oneBook") : tr("manyBooks")}';
+        var dateText = '${spot[0].x.toInt()}.${DateTime.now().month}';
+        var tooltipText = '$quantityText\n$dateText';
+        return [
+          LineTooltipItem(
+            tooltipText,
+            const TextStyle(color: Colors.black),
+          ),
+        ];
+      });
 
   FlTitlesData get titlesDataMonth => FlTitlesData(
         bottomTitles: bottomTitlesMonth,

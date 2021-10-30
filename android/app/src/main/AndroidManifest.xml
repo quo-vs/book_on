@@ -1,8 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.vsprog.book_on">
-   <application
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA"/>
+
+    <application
         android:label="BookOn"
         android:icon="@mipmap/launcher_icon">
+
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -38,4 +43,5 @@
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
+
 </manifest>

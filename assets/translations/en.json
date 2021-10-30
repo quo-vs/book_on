@@ -98,5 +98,19 @@
     "syncFirebase": "Sync with Cloud",
     "updateGoal": "Update Goal",
     "setGoal": "Set Goal",
-    "bookWasRead": "Are you finished book?"
+    "bookWasRead": "Are you finished book?",
+    "previous": "Previous",
+    "next": "Next",
+    "jan": "January",
+    "feb": "February",
+    "mar": "March",
+    "apr": "April",
+    "may": "May",
+    "jun": "June",
+    "jul": "July",
+    "aug": "August",
+    "sep": "September",
+    "oct": "October",
+    "nov": "November",
+    "dec": "December"
 }

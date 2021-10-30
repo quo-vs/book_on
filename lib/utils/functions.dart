@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -163,5 +164,40 @@ class Functions {
       return false;
     }
     return true;
+  }
+
+  static String numberToMonth(int monthNumber) {
+    if (monthNumber < 1 && monthNumber > 12) {
+      return "UNKNOWN MONTH";
+    }
+    switch (monthNumber) {
+      case 1:
+        return tr('jan');
+      case 2:
+        return tr('feb');
+      case 3:
+        return tr('mar');
+      case 4:
+        return tr('apr');
+      case 5:
+        return tr('may');
+      case 6:
+        return tr('jun');
+      case 7:
+        return tr('jul');
+      case 8:
+        return tr('aug');
+      case 9:
+        return tr('sep');
+      case 10:
+        return tr('oct');
+      case 11:
+        return tr('nov');
+      case 12:
+        return tr('dec');
+      
+      default: 
+        return "UNKNOWN MONTH";
+    }
   }
 }

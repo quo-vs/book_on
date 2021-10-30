@@ -4,10 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 import '../data/database.dart';
-import '../utils/functions.dart';
 import '../widgets/statistic_chart.dart';
 import '../utils/constants.dart';
-
 
 class StatisticsScreen extends StatefulWidget {
   const StatisticsScreen({Key? key}) : super(key: key);
@@ -22,7 +20,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
   bool _containsFinishedBooks(List<BookWithLog>? books) {
     if (books != null && books.isNotEmpty) {
-      return books.any((b) => b.log.isFinished == true);      
+      return books.any((b) => b.log.isFinished == true);
     }
     return false;
   }
@@ -55,48 +53,47 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 height: AppConst.heightBetweenWidgets,
               ),
               DefaultTabController(
-                    length: 2,
-                    child: ToggleButtons(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Text(
-                            tr('month')
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Text(
-                            tr('week')
-                          ),
-                        ),              
-                      ],
-                      onPressed: (int index) {
-                        setState(() {
-                          for (int buttonIndex = 0; buttonIndex < _isSelected.length; buttonIndex++) {
-                            if (buttonIndex == index) {
-                              _isSelected[buttonIndex] = true;
-                              _currentIndex = buttonIndex;
-                            } else {
-                              _isSelected[buttonIndex] = false;
-                            }
-                          }
-                        });
-                      },
-                      isSelected: _isSelected,
+                length: 2,
+                child: ToggleButtons(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(tr('month')),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-              Container(
-                height: 355,
-                width: double.infinity,
-                padding: const EdgeInsets.all(10),
-                child: StatisticCharts(
-                  data: snapshot.data!, isMonthChart: _currentIndex == 0
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(tr('week')),
+                    ),
+                  ],
+                  onPressed: (int index) {
+                    setState(() {
+                      for (int buttonIndex = 0;
+                          buttonIndex < _isSelected.length;
+                          buttonIndex++) {
+                        if (buttonIndex == index) {
+                          _isSelected[buttonIndex] = true;
+                          _currentIndex = buttonIndex;
+                        } else {
+                          _isSelected[buttonIndex] = false;
+                        }
+                      }
+                    });
+                  },
+                  isSelected: _isSelected,
                 ),
-              ),              
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Container(
+                height: 385,
+                width: double.infinity,
+                padding: const EdgeInsets.all(6),
+                child: StatisticCharts(
+                  data: snapshot.data!,
+                  isMonthChart: _currentIndex == 0,
+                ),
+              ),
             ],
           );
         },

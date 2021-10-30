@@ -28,47 +28,44 @@ class StatisticChartsState extends State<StatisticCharts> {
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 1.23,
-      child: Container(
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(18)),
-        ),
-        child: Stack(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                const SizedBox(
-                  height: 37,
+    return Container(
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(18)),
+      ),
+      child: Stack(
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              const SizedBox(
+                height: 37,
+              ),
+              Text(
+                widget.isMonthChart
+                    ? tr('monthStatistic')
+                    : tr('weekStatistic'),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 2,
                 ),
-                Text(
-                  widget.isMonthChart
-                      ? tr('monthStatistic')
-                      : tr('weekStatistic'),
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 2,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(
-                  height: 37,
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 16.0, left: 6.0),
-                    child: _Charts(
-                      booksData: widget.data,
-                      isMonthChart: widget.isMonthChart,
-                    ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 16.0, left: 6.0),
+                  child: _Charts(
+                    booksData: widget.data,
+                    isMonthChart: widget.isMonthChart,
                   ),
                 ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
