@@ -4,9 +4,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:searchfield/searchfield.dart';
 
-import '../data/database.dart';
-import '../widgets/book_card.dart';
-import '../screens/edit_book.dart';
+import '../../data/database.dart';
+import '../../widgets/book_card.dart';
+import '../../screens/books/edit_book.dart';
+
 
 class AllBooksScreen extends StatefulWidget {
   static const routeName = '/allBooks';

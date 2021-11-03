@@ -1,5 +1,6 @@
-import 'package:book_on/screens/goals_screen.dart';
 import 'package:moor_flutter/moor_flutter.dart';
+
+import '../screens/goals/goals_screen.dart';
 
 part 'database.g.dart';
 

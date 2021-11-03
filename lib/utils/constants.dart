@@ -7,6 +7,8 @@ class AppConst {
 
   static const double imageLogoHeight = 115;
   static const double imageLogoWidth = 180;
+
+  static const USERS = 'users';
 }
 
 /// Fonts assets used in this application,

@@ -9,10 +9,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 
-import '../data/database.dart';
-import '../screens/edit_quotes.dart';
-import '../utils/functions.dart';
-import '../widgets/quote_widget.dart';
+import '../../data/database.dart';
+import '../../screens/quotes/edit_quotes.dart';
+import '../../utils/helper.dart';
+import '../../widgets/quote_widget.dart';
 
 class QuoteShareScreen extends StatefulWidget {
   static const routeName = '/share-quote';
@@ -54,7 +54,7 @@ class _QuoteShareScreenState extends State<QuoteShareScreen> {
 
 
   _editQuote(BuildContext context) {
-    Functions.pushPageNamed(context, EditQuoteScreen.routeName, quote.id);
+    Helper.pushPageNamed(context, EditQuoteScreen.routeName, quote.id);
   }
 
   Future<void> _shareQuote(context) async {

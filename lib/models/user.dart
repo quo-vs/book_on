@@ -1,32 +1,29 @@
-import 'package:equatable/equatable.dart';
+class User {
+  String email;
+  String firstName;
+  String userID;
 
-/// User model
-/// 
-/// /// [User.empty] represents an unauthenticated user.
-class User extends Equatable {
-
-  const User ({
-    required this.id,
-    this.name,
-    this.email
+  User({
+    this.email = '',
+    this.firstName = '',
+    this.userID = ''
   });
 
-  /// The current user's id
-  final String id;
+  String fullName() => firstName;
 
-  /// The current user's email address
-  final String? email;
+  factory User.fromJson(Map<String, dynamic> parsedJson) {
+    return User(
+        email: parsedJson['email'] ?? '',
+        firstName: parsedJson['firstName'] ?? '',
+        userID: parsedJson['id'] ?? parsedJson['userID'] ?? ''
+      );
+  }
 
-  /// The current user's name (display name)
-  final String? name;
-
-  /// Empty user that represents an unauthenticated user.
-  static const empty = User(id: '');
-
-  /// Convenience getter to dermine whether the current user is empty
-  bool get isEmpty => this == User.empty;
-
-  @override
-  List<Object?> get props => [id, email, name];
-
+  Map<String, dynamic> toJson() {
+    return {
+      'email': email,
+      'firstName': firstName,
+      'id': userID,
+    };
+  }
 }

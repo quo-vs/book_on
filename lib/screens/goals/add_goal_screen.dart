@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 
-import '../data/database.dart';
-import '../screens/goals_screen.dart';
-import '../utils/constants.dart';
+import '../../data/database.dart';
+import '../../utils/constants.dart';
+import '../../screens/goals/goals_screen.dart';
+
 
 class AddGoalScreen extends StatefulWidget {
   static const routeName = '/add-goal';

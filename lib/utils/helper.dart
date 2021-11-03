@@ -1,33 +1,36 @@
 import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:moor_flutter/moor_flutter.dart';
 
 import '../data/database.dart';
 
-class Functions {
-  static Future pushPageNamed(BuildContext context, String routeName,
+class Helper {
+  static pushPageNamed(BuildContext context, String routeName,
       [Object? arguments]) {
     if (arguments != null) {
-      return Navigator.of(context).pushNamed(routeName, arguments: arguments);
+      Navigator.of(context).pushNamed(routeName, arguments: arguments);
+    } else {
+      Navigator.of(context).pushNamed(routeName);
     }
-
-    return Navigator.of(context).pushNamed(
-      routeName,
-    );
   }
 
-  static Future pushPage(BuildContext context, Widget page) {
-    var result = Navigator.push(
-      context,
-      MaterialPageRoute(builder: (BuildContext context) {
-        return page;
-      }),
-    );
+  static pushReplacement(BuildContext context, Widget destination) {
+    Navigator.of(context)
+        .pushReplacement(MaterialPageRoute(builder: (context) => destination));
+  }
 
-    return result;
+  static push(BuildContext context, Widget destination) {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => destination));
+  }
+
+  static pushAndRemoveUntil(
+      BuildContext context, Widget destination, bool predict) {
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => destination),
+        (Route<dynamic> route) => predict);
   }
 
   static Future pushPageDialog(BuildContext context, Widget page) {
@@ -44,15 +47,12 @@ class Functions {
     return result;
   }
 
-  static pushPageReplacement(BuildContext context, Widget page) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (BuildContext context) {
-          return page;
-        },
-      ),
-    );
+  static bool isDarkMode(BuildContext context) {
+    if (Theme.of(context).brightness == Brightness.light) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   static bool checkConnectionError(e) {
@@ -166,6 +166,59 @@ class Functions {
     return true;
   }
 
+  static String? validateEmail(String? value) {
+    String pattern =
+        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+    RegExp regex = RegExp(pattern);
+    if (!regex.hasMatch(value ?? '')) {
+      return 'Enter Valid Email';
+    } else {
+      return null;
+    }
+  }
+
+  static String? validatePassword(String? value) {
+    if ((value?.length ?? 0) < 6) {
+      return 'Password must be more than 5 characters';
+    } else {
+      return null;
+    }
+  }
+
+  static String? validateConfirmPassword(
+      String? password, String? confirmPassword) {
+    if (password != confirmPassword) {
+      return 'Password doesn\'t match';
+    } else if (confirmPassword?.isEmpty ?? true) {
+      return 'Confirm password is required';
+    } else {
+      return null;
+    }
+  }
+
+  static InputDecoration getInputDecoration({required String hint}) {
+    return InputDecoration(
+      contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      hintText: hint,
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(25.0),
+        borderSide: const BorderSide(width: 2.0),
+      ),
+      errorBorder: OutlineInputBorder(
+        //borderSide: BorderSide(color: errorColor),
+        borderRadius: BorderRadius.circular(25.0),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        //borderSide: BorderSide(color: errorColor),
+        borderRadius: BorderRadius.circular(25.0),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.grey.shade200),
+        borderRadius: BorderRadius.circular(25.0),
+      ),
+    );
+  }
+
   static String numberToMonth(int monthNumber) {
     if (monthNumber < 1 && monthNumber > 12) {
       return "UNKNOWN MONTH";
@@ -195,8 +248,8 @@ class Functions {
         return tr('nov');
       case 12:
         return tr('dec');
-      
-      default: 
+
+      default:
         return "UNKNOWN MONTH";
     }
   }

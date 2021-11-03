@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 
-import '../data/database.dart';
-import '../screens/edit_quotes.dart';
-import '../screens/quote_share_screen.dart';
-import '../widgets/quote_widget.dart';
-import '../utils/functions.dart';
+import '../../data/database.dart';
+import '../../screens/quotes/edit_quotes.dart';
+import '../../screens/quotes/quote_share_screen.dart';
+import '../../widgets/quote_widget.dart';
+import '../../utils/helper.dart';
 
 class QuotesSctreen extends StatefulWidget {
   const QuotesSctreen({Key? key}) : super(key: key);
@@ -27,7 +27,7 @@ class _QuotesSctreenState extends State<QuotesSctreen> {
         leading: IconButton(
           icon: const Icon(Icons.add),
           onPressed: () {
-            Functions.pushPageNamed(context, EditQuoteScreen.routeName);
+            Helper.pushPageNamed(context, EditQuoteScreen.routeName);
           },
         ),
       ),
@@ -80,7 +80,7 @@ class _QuotesSctreenState extends State<QuotesSctreen> {
                   ),
                   child: InkWell(
                     onTap: () {
-                      Functions.pushPageNamed(context,
+                      Helper.pushPageNamed(context,
                           QuoteShareScreen.routeName, snapshot.data![index].id);
                     },
                     child: QuoteWidget(quote: snapshot.data![index]),

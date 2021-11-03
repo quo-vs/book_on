@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 
-import '../blocs/auth/auth.dart';
 import '../providers/app_provider.dart';
 import '../utils/constants.dart';
-import '../screens/login_screen.dart';
-import '../utils/functions.dart';
-import '../blocs/blocs.dart';
-import '../services/auth_service.dart';
+import '../blocs/authentication/authentication_bloc.dart';
+import '../blocs/authentication/authentication_event.dart';
+import '../services/authentication_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   static const routeName = '/settings';
@@ -22,11 +19,6 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  late AuthService _authService;
-
-  _SettingsScreenState() {
-    _authService = AuthService();
-  }
   late List _items;
   var _isLoading = false;
 
@@ -49,7 +41,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         'function': () => showAbout(),
       },
     ];
-    if (_authService.isSignedIn()) {
+    if (AuthenticationService.isSignedIn()) {
       _items.addAll([
         {
           'icon': Icons.sync,
@@ -97,7 +89,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         context, tr('changeLanguage'), _items[index]['icon']);
                   }
 
-                  if (_authService.isSignedIn()) {
+                  if (AuthenticationService.isSignedIn()) {
                     if (_items[index]['title'] == tr('syncFirebase')) {
                       return _buildSyncSwitch(context, _items[index]);
                     }
@@ -122,13 +114,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   _logout() {
-    BlocProvider.of<AuthBloc>(context).add(LoggedOut());
-    Functions.pushPageReplacement(context, const LoginScreen());
+    context.read<AuthenticationBloc>().add(LogoutEvent());
   }
 
   _login() {
-    BlocProvider.of<AuthBloc>(context).add(AppStarted());
-    Functions.pushPageReplacement(context, const LoginScreen());
+    context.read<AuthenticationBloc>().add(LogoutEvent());
   }
 
   Widget _buildSyncSwitch(BuildContext context, Map item) {

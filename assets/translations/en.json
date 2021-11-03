@@ -112,5 +112,12 @@
     "sep": "September",
     "oct": "October",
     "nov": "November",
-    "dec": "December"
+    "dec": "December",
+    "loginFailed": "Login failed. Please try again later.",
+    "couldNotSignUp": "Couldn't sign up.",
+    "couldNotLogin": "Couldn't login. Please try again.",
+    "failedToInitialiseServer": "Failed to initialise server.",
+    "unauthenticated": "Unauthenticated",
+    "fillRequiredFieldsError": "Please fill required fields.",
+    "resetPasswordSent": "Reset password email has been sent, Please check your email."
 }

@@ -7,12 +7,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:moor_flutter/moor_flutter.dart' as moor;
 import 'package:provider/provider.dart';
 
-import '../utils/alerts_helper.dart';
-import '../screens/page_controller_screen.dart';
-import '../data/database.dart';
-import '../utils/functions.dart';
-import '../utils/constants.dart';
-import '../widgets/book_log_form_widget.dart';
+import '../../utils/alerts_helper.dart';
+import '../page_controller_screen.dart';
+import '../../data/database.dart';
+import '../../utils/helper.dart';
+import '../../utils/constants.dart';
+import '../../widgets/book_log_form_widget.dart';
 
 class EditBookScreen extends StatefulWidget {
   static const routeName = '/edit-book';
@@ -92,7 +92,7 @@ class _EditBookScreenState extends State<EditBookScreen> {
           initial = BookInitial(
               title: book.title,
               author: book.author,
-              image: Functions.base64String(book.image),
+              image: Helper.base64String(book.image),
               pagesAmount: book.pagesAmount,
               currentPage: bookLog != null && bookLog.currentPage != null
                   ? bookLog.currentPage!
@@ -122,12 +122,12 @@ class _EditBookScreenState extends State<EditBookScreen> {
       return false;
     }
     _formKey.currentState?.save();
-    return Functions.sameValues(initial!.title, _editedBook.title.value) &&
-        Functions.sameValues(initial!.author, _editedBook.author.value) &&
-        Functions.sameValues(initial!.pagesAmount.toString(),
+    return Helper.sameValues(initial!.title, _editedBook.title.value) &&
+        Helper.sameValues(initial!.author, _editedBook.author.value) &&
+        Helper.sameValues(initial!.pagesAmount.toString(),
             _editedBook.pagesAmount.value.toString()) &&
-        Functions.sameValues(
-            initial!.image, Functions.base64String(_editedBook.image.value));
+        Helper.sameValues(
+            initial!.image, Helper.base64String(_editedBook.image.value));
   }
 
   Future<void> _deleteBook() async {
@@ -141,7 +141,7 @@ class _EditBookScreenState extends State<EditBookScreen> {
     if (_editedBook.bookLogId.value != null) {
       await bookLogsDao.deleteBookLog(_editedBook.bookLogId.value!);
     }
-    Functions.pushPageReplacement(context, PageControllerScreen());
+    Helper.pushReplacement(context, const PageControllerScreen());
   }
 
   Future<void> _saveForm() async {
@@ -289,7 +289,7 @@ class _EditBookScreenState extends State<EditBookScreen> {
                                       : initial?.image != null &&
                                               initial?.image != ""
                                           ? Container(
-                                              child: Functions
+                                              child: Helper
                                                   .imageFromBase64String(
                                                 initial!.image,
                                               ),

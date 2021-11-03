@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 
-import '../data/database.dart';
-import '../screens/edit_book.dart';
-import '../screens/settings_streen.dart';
-import '../utils/functions.dart';
-import '../widgets/book_card.dart';
-import '../widgets/books_slider.dart';
-import '../utils/constants.dart';
-import '../screens/all_books_screen.dart';
+import '../../data/database.dart';
+import 'edit_book.dart';
+import '../settings_streen.dart';
+import '../../utils/helper.dart';
+import '../../widgets/book_card.dart';
+import '../../widgets/books_slider.dart';
+import '../../utils/constants.dart';
+import 'all_books_screen.dart';
 
 class BooksScreen extends StatefulWidget {
   const BooksScreen({Key? key}) : super(key: key);
@@ -37,14 +37,14 @@ class _BooksScreenState extends State<BooksScreen> {
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
-              Functions.pushPageNamed(context, SettingsScreen.routeName);
+              Helper.pushPageNamed(context, SettingsScreen.routeName);
             },
           ),
         ],
         leading: IconButton(
           icon: const Icon(Icons.add),
           onPressed: () {
-            Functions.pushPageNamed(context, EditBookScreen.routeName);
+            Helper.pushPageNamed(context, EditBookScreen.routeName);
           },
         ),
         title: Text(tr('books')),

@@ -6,7 +6,7 @@ import 'package:jiffy/jiffy.dart';
 
 import '../data/database.dart';
 import '../utils/constants.dart';
-import '../utils/functions.dart';
+import '../utils/helper.dart';
 import '../widgets/statistic_chart.dart';
 
 class MonthlyBarChart extends StatefulWidget {
@@ -105,7 +105,7 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
           height: AppConst.heightBetweenWidgets,
         ),
         Text(
-          '${tr('total')} in ${Functions.numberToMonth(_dateToBuildChart.month)}: $total',
+          '${tr('total')} in ${Helper.numberToMonth(_dateToBuildChart.month)}: $total',
           style: const TextStyle(fontSize: 16),
         ),
       ],
@@ -120,7 +120,7 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
         date.day,
         statsData
             .where(
-              (ms) => Functions.isSameDate(ms.finishedDate!, date),
+              (ms) => Helper.isSameDate(ms.finishedDate!, date),
             )
             .toList()
             .length);

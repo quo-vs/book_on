@@ -4,10 +4,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
-import '../data/database.dart';
-import '../screens/add_goal_screen.dart';
-import '../utils/constants.dart';
-import '../utils/functions.dart';
+import '../../data/database.dart';
+import '../../screens/goals/add_goal_screen.dart';
+import '../../utils/constants.dart';
+import '../../utils/helper.dart';
 
 enum GoalType { Day, Mounth, Year }
 
@@ -36,7 +36,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
             ? IconButton(
                 icon: const Icon(Icons.add),
                 onPressed: () {
-                  Functions.pushPageNamed(context, AddGoalScreen.routeName);
+                  Helper.pushPageNamed(context, AddGoalScreen.routeName);
                 })
             : null,
         title: Text(tr('goals')),
@@ -174,18 +174,18 @@ class _GoalsScreenState extends State<GoalsScreen> {
       switch (goalType) {
         case GoalType.Day:
           {
-            num readPagesToday = Functions.getPageAmountReadToday(books);
+            num readPagesToday = Helper.getPageAmountReadToday(books);
             return _buildRadialGaugeItem(goal.first, readPagesToday);
           }
 
         case GoalType.Mounth:
           {
-            int readBooksThisMonth = Functions.getBooksReadThisMonth(books);
+            int readBooksThisMonth = Helper.getBooksReadThisMonth(books);
             return _buildRadialGaugeItem(goal.first, readBooksThisMonth);
           }
         case GoalType.Year:
           {
-            int readBooksThisYear = Functions.getBooksReadThisYear(books);
+            int readBooksThisYear = Helper.getBooksReadThisYear(books);
             return _buildRadialGaugeItem(goal.first, readBooksThisYear);
           }
       }

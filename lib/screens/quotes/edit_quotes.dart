@@ -4,12 +4,12 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:moor_flutter/moor_flutter.dart' as moor;
 import 'package:provider/provider.dart';
 
-import '../screens/page_controller_screen.dart';
-import '../utils/alerts_helper.dart';
-import '../utils/functions.dart';
-import '../data/database.dart';
-import '../widgets/images_slider.dart';
-import '../utils/constants.dart';
+import '../page_controller_screen.dart';
+import '../../utils/alerts_helper.dart';
+import '../../utils/helper.dart';
+import '../../data/database.dart';
+import '../../widgets/images_slider.dart';
+import '../../utils/constants.dart';
 
 
 class EditQuoteScreen extends StatefulWidget {
@@ -113,7 +113,7 @@ class _EditQuoteScreenState extends State<EditQuoteScreen> {
     setState(() {
       _isLoading = false;
     });
-    Functions.pushPageReplacement(context, PageControllerScreen(initialPage: 1,));
+    Helper.pushReplacement(context, PageControllerScreen(initialPage: 1,));
   }
 
   _onImageSelected(String imagePath) {
@@ -128,7 +128,7 @@ class _EditQuoteScreenState extends State<EditQuoteScreen> {
 
     var dao = Provider.of<QuotesDao>(context, listen: false);
     dao.deleteQuote(_editedQuote);
-    Functions.pushPageReplacement(context, PageControllerScreen(initialPage: 1,));
+    Helper.pushReplacement(context, PageControllerScreen(initialPage: 1,));
   }
 
 

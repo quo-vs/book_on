@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 class AlertHelper {
@@ -21,7 +22,7 @@ class AlertHelper {
             await callbackFunction();
             return Navigator.of(context).pop(true);
           },
-          color: Theme.of(context).primaryColor, 
+          color: Theme.of(context).primaryColor,
         ),
         DialogButton(
           child: Text(
@@ -29,7 +30,7 @@ class AlertHelper {
             style: const TextStyle(color: Colors.white, fontSize: 14),
           ),
           onPressed: () => Navigator.of(context).pop(false),
-           color: Theme.of(context).errorColor,
+          color: Theme.of(context).errorColor,
         ),
       ],
     ).show();
@@ -44,23 +45,21 @@ class AlertHelper {
       title: tr("deleteBook"),
       buttons: [
         DialogButton(
-          child: Text(
-            tr("yes"),
-            style: const TextStyle(color: Colors.white, fontSize: 14),
-          ),
-          onPressed: () async {
-            await callbackFunction();
-          },
-          color: Theme.of(context).errorColor 
-        ),
+            child: Text(
+              tr("yes"),
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+            ),
+            onPressed: () async {
+              await callbackFunction();
+            },
+            color: Theme.of(context).errorColor),
         DialogButton(
-          child: Text(
-            tr("no"),
-            style: const TextStyle(color: Colors.white, fontSize: 14),
-          ),
-          onPressed: () => Navigator.pop(context),
-           color: Theme.of(context).primaryColor 
-        ),
+            child: Text(
+              tr("no"),
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+            ),
+            onPressed: () => Navigator.pop(context),
+            color: Theme.of(context).primaryColor),
       ],
     ).show();
   }
@@ -132,14 +131,13 @@ class AlertHelper {
         });
   }
 
-  static Future<void> showErrorAlert(BuildContext context, String errorText) async {
+  static Future<void> showErrorAlert(
+      BuildContext context, String errorText) async {
     await showDialog(
       context: context,
       builder: (_) {
         return AlertDialog(
-          title: Text(
-            errorText
-          ),
+          title: Text(errorText),
           actions: <Widget>[
             FlatButton(
               textColor: Theme.of(context).accentColor,
@@ -163,31 +161,65 @@ class AlertHelper {
       title: tr("bookWasRead"),
       buttons: [
         DialogButton(
-          child: Text(
-            tr("yes"),
-            style: const TextStyle(color: Colors.white, fontSize: 14),
-          ),
-          onPressed: () {
-            _isRead = true;
-            
-            Navigator.of(context).pop();
-          },
-          color: Theme.of(context).errorColor 
-        ),
+            child: Text(
+              tr("yes"),
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+            ),
+            onPressed: () {
+              _isRead = true;
+
+              Navigator.of(context).pop();
+            },
+            color: Theme.of(context).errorColor),
         DialogButton(
-          child: Text(
-            tr("no"),
-            style: const TextStyle(color: Colors.white, fontSize: 14),
-          ),
-          onPressed: () {
-            _isRead = false;
-            Navigator.of(context).pop();
-          },
-           color: Theme.of(context).primaryColor 
-        ),
+            child: Text(
+              tr("no"),
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+            ),
+            onPressed: () {
+              _isRead = false;
+              Navigator.of(context).pop();
+            },
+            color: Theme.of(context).primaryColor),
       ],
     ).show();
 
     return _isRead;
+  }
+
+  static late ProgressDialog progressDialog;
+
+  static showProgress(
+      BuildContext context, String message, bool isDismissible) async {
+    progressDialog = ProgressDialog(context,
+        type: ProgressDialogType.normal, isDismissible: isDismissible);
+    progressDialog.style(
+        message: message,
+        borderRadius: 10.0,
+        progressWidget: Container(
+          padding: const EdgeInsets.all(8),
+          child: const CircularProgressIndicator(),
+        ),
+        elevation: 10.0,
+        insetAnimCurve: Curves.easeInOut,
+        messageTextStyle:
+            const TextStyle(fontSize: 19.0, fontWeight: FontWeight.bold));
+    await progressDialog.show();
+  }
+
+  static updateProgress(String message) {
+    progressDialog.update(message: message);
+  }
+
+  static hideProgress() async {
+    await progressDialog.hide();
+  }
+
+  static showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(
+        content: Text(message),
+      ));
   }
 }

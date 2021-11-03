@@ -5,7 +5,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flex_color_scheme/src/flex_extensions.dart';
 
 import '../data/database.dart';
-import '../utils/functions.dart';
+import '../utils/helper.dart';
 import '../widgets/statistic_chart.dart';
 
 class WeeklyBarChart extends StatefulWidget {
@@ -119,7 +119,7 @@ class _WeeklyBarChartState extends State<WeeklyBarChart> {
         date.weekday,
         statsData
             .where(
-              (ms) => Functions.isSameDate(ms.finishedDate!, date),
+              (ms) => Helper.isSameDate(ms.finishedDate!, date),
             )
             .toList()
             .length);

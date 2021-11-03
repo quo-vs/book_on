@@ -27,9 +27,7 @@ dependencies:
   formz: ^0.4.0
   google_fonts: ^2.1.0
   rflutter_alert: ^2.0.4
-
-  google_sign_in: ^5.1.0
-
+  smooth_page_indicator: ^1.0.0+2
   cloud_firestore: ^2.5.1
   firebase_storage: ^10.0.5
   firebase_core: ^1.7.0
@@ -47,6 +45,7 @@ dependencies:
   searchfield: ^0.5.6
   cupertino_icons: ^1.0.2
   jiffy: ^4.1.0
+  progress_dialog_null_safe: ^1.0.6
 
 dev_dependencies:
   flutter_test:

@@ -5,7 +5,7 @@ import 'package:rotated_corner_decoration/rotated_corner_decoration.dart';
 import 'package:uuid/uuid.dart';
 
 import '../data/database.dart';
-import '../screens/edit_book.dart';
+import '../screens/books/edit_book.dart';
 
 class BookCard extends StatelessWidget {
   final Book? entry;
@@ -20,7 +20,7 @@ class BookCard extends StatelessWidget {
   final String imgTag = uuid.v4();
 
   BorderRadius _borderRadius() {
-    return BorderRadius.all(Radius.circular(10));
+    return const BorderRadius.all(Radius.circular(10));
   }
 
   @override

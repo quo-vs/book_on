@@ -4,6 +4,7 @@ class SPSettings {
   static const String languageKey = 'language';
   static const String themeKey = 'theme';
   static const String syncKey = 'sync';
+  static const String onBoardingFinishedKey = 'finishedOnBoarding';
 
   late SharedPreferences _sharedPreferences;
   SPSettings._internal();
@@ -49,5 +50,16 @@ class SPSettings {
     syncWithCloud ??= false;
 
     return syncWithCloud;
+  }
+
+  Future setOnBoardingFinished(bool isFinished) async {
+    return await _sharedPreferences.setBool(onBoardingFinishedKey, isFinished);
+  }
+
+  bool getOnBoardingFinished() {
+    bool? onBoardingFinished = _sharedPreferences.getBool(onBoardingFinishedKey);
+    onBoardingFinished ??= false;
+
+    return onBoardingFinished;
   }
 }
