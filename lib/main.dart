@@ -123,7 +123,7 @@ class _AppState extends State<App> {
 
     return Consumer<AppProvider>(builder: (context, appProvider, child) {
       return MaterialApp(
-        title: tr('title'),
+        title: 'BookOn',
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,
         locale: Locale(appProvider.language),

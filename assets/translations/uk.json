@@ -1,10 +1,11 @@
 {
-    "title": "BookOn",
+    "appTitle": "BookOn",
     "login": "Ввійти",
     "signup": "Зареєструватись",
     "not_a_member": "Ще не маєте аккаунта?",
     "already_have_account": "Already have account?",
     "retry": "Сробувати знову",
+    "name": "Ім'я",
     "email_label": "E-mail адреса",
     "email_required_error": "E-mail є обов'язковим полем",
     "email_bad_format_error": "Не правильний формат E-mail ",
@@ -38,7 +39,7 @@
     "weekStatistic": "Статистика за тиждень",
     "total": "Всього",
     "addQuote": "Добавити цитату",
-    "signInWithGoogle": "Ввійти з Google",
+    "signIn": "Ввійти",
     "exploreAnonymously": "Ввійти анонімно",
     "or": "АБО",
     "anErrorOccured": "Виникла помилка",
@@ -117,5 +118,14 @@
     "failedToInitialiseServer": "Помилка підключення до сервера.",
     "unauthenticated": "Не авторизований",
     "fillRequiredFieldsError": "Заповніть усі обов'язкові поля.",
-    "resetPasswordSent": "Повідомлення з інструкцією відновленн пароля надіслоно на вашу електронну скриньку."
+    "resetPasswordSent": "Повідомлення з інструкцією відновленн пароля надіслоно на вашу електронну скриньку.",
+    "forgotPassword": "Забули пароль?",
+    "resetPassword": "Відновити пароль",
+    "sendResetEmail": "Відновити",
+    "createNewAccount": "Створити аккаунт",
+    "continue": "Продовжити",
+    "in": "у",
+    "booksTracker": "Трекер книги",
+    "welcome": "Вітаємо у BookOn!",
+    "trackYourBooks": "Відстежуйте прочитані книги"
 }

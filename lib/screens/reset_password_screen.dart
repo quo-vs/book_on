@@ -86,7 +86,7 @@ class _ReetPasswordScreenState extends State<ReetPasswordScreen> {
                             style: const TextStyle(fontSize: 18.0),
                             keyboardType: TextInputType.emailAddress,
                             decoration: Helper.getInputDecoration(
-                              hint: 'E-mail',
+                              hint: tr('email_label'),
                             )
                           ),
                         ),
@@ -100,7 +100,7 @@ class _ReetPasswordScreenState extends State<ReetPasswordScreen> {
                               )
                             ),
                             child: Text(
-                              tr('sendEmail'),
+                              tr('sendResetEmail'),
                               style: const TextStyle(
                                 fontSize: 20,
                               ),

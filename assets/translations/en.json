@@ -1,10 +1,11 @@
 {
-    "title": "BookOn",
+    "appTitle": "BookOn",
     "login": "Login",
     "signup": "Sign up",
     "not_a_member": "Not a member?",
     "already_have_account": "Already have account?",
     "retry": "Retry",
+    "name": "Name",
     "email_label": "E-mail address",
     "email_required_error": "Email is required",
     "email_bad_format_error": "The email address is badly formatted",
@@ -38,7 +39,7 @@
     "weekStatistic": "Week statistic",
     "total": "Total",
     "addQuote": "Add qoute",
-    "signInWithGoogle": "Sign in with google",
+    "signIn": "Sign in with google",
     "exploreAnonymously": "Explore anonymously",
     "or": "OR",
     "anErrorOccured": "An Error Occured",
@@ -119,5 +120,15 @@
     "failedToInitialiseServer": "Failed to initialise server.",
     "unauthenticated": "Unauthenticated",
     "fillRequiredFieldsError": "Please fill required fields.",
-    "resetPasswordSent": "Reset password email has been sent, Please check your email."
+    "resetPasswordSent": "Reset password email has been sent, Please check your email.",
+    "forgotPassword": "Forgot password?",
+    "resetPassword": "Reset password",
+    "sendResetEmail": "Reset",
+    "creatingAccountLoading": "Creating new account, Please wait...",
+    "createNewAccount": "Create new account",
+    "continue": "Continue",
+    "in": "in",
+    "booksTracker": "Books tracker",
+    "welcome": "Welcome to BookOn!",
+    "trackYourBooks": "Track your books"
 }

@@ -30,11 +30,11 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     super.dispose();
   }
 
-  final List<String> _titleList = ['BookOn', 'Books traker'];
+  final List<String> _titleList = [tr('appTitle'), tr('booksTracker')];
 
   final List<String> _subtitleList = [
-    'Welcome to BookOn World!',
-    'Track your books'
+    tr('welcome'),
+    tr('trackYourBooks')
   ];
 
   final List<dynamic> _imageList = [
@@ -60,27 +60,28 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                     context.read<OnBoardingCubit>().onPageChanged(index);
                   },
                 ),
-                Visibility(
-                  visible: state.currentPageCount + 1 == _titleList.length,
-                  child: Align(
-                    alignment: Directionality.of(context) == TextDirection.LTR
-                        ? Alignment.bottomRight
-                        : Alignment.bottomLeft,
-                    child:
-                        BlocListener<AuthenticationBloc, AuthenticationState>(
-                      listener: (context, state) {
-                        if (state.authState == AuthState.unauthenticated) {
-                          Helper.pushAndRemoveUntil(
-                              context, const WelcomeScreen(), false);
-                        }
-                      },
-                      child: OutlineButton(
-                        onPressed: () {
-                          context
-                              .read<AuthenticationBloc>()
-                              .add(FinishedOnBoardingEvent());
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Visibility(
+                    visible: state.currentPageCount + 1 == _titleList.length,
+                    child: Align(
+                      alignment:  Alignment.bottomRight,
+                      child:
+                          BlocListener<AuthenticationBloc, AuthenticationState>(
+                        listener: (context, state) {
+                          if (state.authState == AuthState.unauthenticated) {
+                            Helper.pushAndRemoveUntil(
+                                context, const WelcomeScreen(), false);
+                          }
                         },
-                        child: const Text('Continue'),
+                        child: OutlineButton(
+                          onPressed: () {
+                            context
+                                .read<AuthenticationBloc>()
+                                .add(FinishedOnBoardingEvent());
+                          },
+                          child: Text(tr('continue')),
+                        ),
                       ),
                     ),
                   ),
@@ -88,17 +89,16 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 50.0),
                   child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: SmoothPageIndicator(
-                        controller: pageController,
-                        count: _titleList.length,
-                        effect: const ScrollingDotsEffect(
-                            //activeDotColor: Colors.white,
-                            //dotColor: Colors.grey.shade400,
-                            dotWidth: 8,
-                            dotHeight: 8,
-                            fixedCenter: true),
-                      )),
+                    alignment: Alignment.bottomCenter,
+                    child: SmoothPageIndicator(
+                      controller: pageController,
+                      count: _titleList.length,
+                      effect: const ScrollingDotsEffect(
+                          dotWidth: 8,
+                          dotHeight: 8,
+                          fixedCenter: false),
+                    ),
+                  ),
                 )
               ],
             );
@@ -123,21 +123,22 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
               )
             : Icon(
                 image as IconData,
-                color: Colors.white,
                 size: 150,
               ),
         const SizedBox(height: 40),
         Text(
           title.toUpperCase(),
           style: const TextStyle(
-              color: Colors.white, fontSize: 18.0, fontWeight: FontWeight.bold),
+            fontSize: 18.0,
+            fontWeight: FontWeight.bold,
+          ),
           textAlign: TextAlign.center,
         ),
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Text(
             subTitle,
-            style: const TextStyle(color: Colors.white, fontSize: 14.0),
+            style: const TextStyle(fontSize: 14.0),
             textAlign: TextAlign.center,
           ),
         ),

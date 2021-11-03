@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -63,7 +64,7 @@ class AuthenticationService {
       }
     } on auth.FirebaseAuthException catch (error) {
       debugPrint(error.toString() + '${error.stackTrace}');
-      String message = 'Couldn\'t sign up';
+      String message = tr('couldNotSignUp');
       switch (error.code) {
         case 'email-already-in-use':
           message = 'Email already in use. Please use another email!';
@@ -83,7 +84,7 @@ class AuthenticationService {
       }
       return message;
     } catch (e) {
-      return 'Couldn\'t sign up';
+      return tr('couldNotSignUp');
     }
   }
 

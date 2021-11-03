@@ -60,7 +60,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     padding: const EdgeInsets.only(
                         left: 16, right: 16, top: 32, bottom: 8),
                     child: Text(
-                      tr('bookOn'),
+                      tr('appTitle'),
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                           fontSize: 24.0, fontWeight: FontWeight.bold),

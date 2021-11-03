@@ -96,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: const TextStyle(fontSize: 18),
                           keyboardType: TextInputType.emailAddress,
                           decoration: Helper.getInputDecoration(
-                            hint: tr('email'),
+                            hint: tr('email_label'),
                           ),
                         ),
                       ),
@@ -116,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           textInputAction: TextInputAction.done,
                           style: const TextStyle(fontSize: 18.0),
                           decoration: Helper.getInputDecoration(
-                            hint: tr('password'),
+                            hint: tr('password_label'),
                           ),
                         ),
                       ),
@@ -129,7 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               Helper.push(context, const ReetPasswordScreen());
                             },
                             child: Text(
-                              tr('forgotPassword?'),
+                              tr('forgotPassword'),
                               style: const TextStyle(
                                   fontSize: 15, letterSpacing: 1),
                             ),

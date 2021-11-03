@@ -105,7 +105,7 @@ class _MonthlyBarChartState extends State<MonthlyBarChart> {
           height: AppConst.heightBetweenWidgets,
         ),
         Text(
-          '${tr('total')} in ${Helper.numberToMonth(_dateToBuildChart.month)}: $total',
+          '${tr('total')} ${tr('in')} ${Helper.numberToMonth(_dateToBuildChart.month)}: $total',
           style: const TextStyle(fontSize: 16),
         ),
       ],
