@@ -18,9 +18,13 @@ To run application locally you need to add your own firebase congiguration file 
 
 # Screenshots
 
- Login Screen                 | Books Screen                 | Edit Book Screen             | Add Quote Screen             
+ Launch Screen                | Welcome Screen               | Sign up Screen               | Sign in Screen             
 :----------------------------:|:----------------------------:|:----------------------------:|:-----------------------------:
-![](../master/screens/1.png)  |![](../master/screens/3.png)  | ![](../master/screens/4.png) | ![](../master/screens/5.png)|
+![](../master/screens/1.png)  |![](../master/screens/13.png) | ![](../master/screens/14.png)| ![](../master/screens/15.png)|
+
+ Reset password Screen        | Books Screen                 | Edit Book Screen             | Add Quote Screen             
+:----------------------------:|:----------------------------:|:----------------------------:|:-----------------------------:
+![](../master/screens/16.png) |![](../master/screens/3.png)  | ![](../master/screens/4.png) | ![](../master/screens/5.png)|
 
  Quotes Screen                | Settings Screen              | Dark mode                    | Update Book Progress Modal            
 :----------------------------:|:----------------------------:|:----------------------------:|:-----------------------------:
