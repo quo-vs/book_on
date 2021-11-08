@@ -23,7 +23,7 @@ class AuthenticationService {
       User? user;
       if (documentSnapshot.exists) {
         user = User.fromJson(documentSnapshot.data() ?? {});
-      } else if (result.user != null) {      
+      } else if (result.user != null) {
         user = User(email: '', firstName: 'Anonym', userID: result.user!.uid);
       }
       return user;
@@ -95,7 +95,13 @@ class AuthenticationService {
   static Future<User?> getAuthUser() async {
     auth.User? firebaseUser = auth.FirebaseAuth.instance.currentUser;
     if (firebaseUser != null) {
-      User? user = await UsersService.getCurrentUser(firebaseUser.uid);
+      
+      User? user;
+      if (firebaseUser.isAnonymous) {
+        user = User(email: '', firstName: 'Anonym', userID: firebaseUser.uid);
+      } else {
+        user = await UsersService.getCurrentUser(firebaseUser.uid);
+      }
       return user;
     } else {
       return null;
@@ -108,9 +114,10 @@ class AuthenticationService {
 
   // Explore app as a guest user
   static signInAsGuest() async {
-    auth.UserCredential result = await auth.FirebaseAuth.instance.signInAnonymously();
+    auth.UserCredential result =
+        await auth.FirebaseAuth.instance.signInAnonymously();
     User user =
-          User(email: '', firstName: 'Anonym', userID: result.user?.uid ?? '');
+        User(email: '', firstName: 'Anonym', userID: result.user?.uid ?? '');
     return user;
   }
 

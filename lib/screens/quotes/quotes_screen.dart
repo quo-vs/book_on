@@ -23,6 +23,7 @@ class _QuotesSctreenState extends State<QuotesSctreen> {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text(tr("quotes")),
         leading: IconButton(
           icon: const Icon(Icons.add),

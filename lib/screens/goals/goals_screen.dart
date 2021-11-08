@@ -21,118 +21,163 @@ class GoalsScreen extends StatefulWidget {
 class _GoalsScreenState extends State<GoalsScreen> {
   List<bool> _isSelected = [true, false, false];
   var _currentIndex = 0;
-  var _goalsExists = false;
 
   @override
   Widget build(BuildContext context) {
     var goalsDao = Provider.of<GoalsDao>(context);
-    goalsDao.getGoals().then((goals) {
-      _goalsExists = goals.isEmpty ? false : true;
-    });
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: _goalsExists == true
-            ? IconButton(
-                icon: const Icon(Icons.add),
-                onPressed: () {
-                  Helper.pushPageNamed(context, AddGoalScreen.routeName);
-                })
-            : null,
-        title: Text(tr('goals')),
-      ),
-      body: StreamBuilder(
-        stream: goalsDao.watchAllGoals(),
-        builder: (ctx, AsyncSnapshot<List<Goal>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
+    Future<bool> _goalsExists() async {
+      var goals = await goalsDao.getGoals();
+      return goals.isEmpty ? false : true;
+    }
+
+    return FutureBuilder<bool>(
+      future: _goalsExists(),
+      builder: (
+        BuildContext context,
+        AsyncSnapshot<bool> snapshot,
+      ) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        } else if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasData && snapshot.data! == false) {
+            return Scaffold(
+              appBar: AppBar(
+                leading: IconButton(
+                  icon: const Icon(Icons.add),
+                  onPressed: () {
+                    Helper.pushPageNamed(context, AddGoalScreen.routeName);
+                  },
+                ),
+                centerTitle: true,
+                title: Text(tr('goals')),
+              ),
+              body: _buildBody(),
             );
-          }
-
-          if (!snapshot.hasData || snapshot.data?.length == 0) {
-            return Center(
-              child: Text(tr('addGoals')),
-            );
-          }
-          
-          return StreamBuilder(
-            stream: Provider.of<BooksDao>(context, listen: false)
-                .watchBookWithLogs(),
-            builder: (ctx, AsyncSnapshot<List<BookWithLog>> snapshotBooks) {
-              if (snapshotBooks.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-
-              return SingleChildScrollView(
-                child: Container(
-                  height: MediaQuery.of(context).size.height - 140,
-                  child: Column(
-                    children: [
-                      const SizedBox(
-                        height: AppConst.heightBetweenWidgets,
-                      ),
-                      DefaultTabController(
-                        length: 3,
-                        child: ToggleButtons(
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20),
-                              child: Text(tr('day')),
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20),
-                              child: Text(tr('month')),
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20),
-                              child: Text(tr('year')),
-                            ),
-                          ],
-                          onPressed: (int index) {
-                            setState(() {
-                              for (int buttonIndex = 0;
-                                  buttonIndex < _isSelected.length;
-                                  buttonIndex++) {
-                                if (buttonIndex == index) {
-                                  _isSelected[buttonIndex] = true;
-                                  _currentIndex = buttonIndex;
-                                } else {
-                                  _isSelected[buttonIndex] = false;
-                                }
-                              }
-                            });
-                          },
-                          isSelected: _isSelected,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      _buildGoalText(
-                          GoalType.values[_currentIndex], snapshot.data!),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Container(
-                        child: _buildRadialGaugeWidget(
-                            GoalType.values[_currentIndex],
-                            snapshot.data!,
-                            snapshotBooks.data),
-                      )
-                    ],
+          } else {
+            return WillPopScope(
+              // disable back button
+              onWillPop: () async => false,
+              child: Scaffold(
+                appBar: AppBar(
+                  title: Text(tr('goals')),
+                  centerTitle: true,
+                  leading: IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () {
+                      _updateGoal(GoalType.values[_currentIndex]);
+                    },
                   ),
                 ),
-              );
-            },
+                body: _buildBody(),
+              ),
+            );
+          }
+        } else {
+          return Text('State: ${snapshot.connectionState}');
+        }
+      },
+    );
+  }
+
+  Widget _buildBody() {
+    var goalsDao = Provider.of<GoalsDao>(context);
+
+    return StreamBuilder(
+      stream: goalsDao.watchAllGoals(),
+      builder: (ctx, AsyncSnapshot<List<Goal>> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
           );
-        },
-      ),
+        }
+
+        if (!snapshot.hasData || snapshot.data?.length == 0) {
+          return Center(
+            child: GestureDetector(
+              child: Text(
+                tr('addGoals'),
+              ),
+              onTap: () {
+                Helper.pushPageNamed(context, AddGoalScreen.routeName);
+              },
+            ),
+          );
+        }
+
+        return StreamBuilder(
+          stream:
+              Provider.of<BooksDao>(context, listen: false).watchBookWithLogs(),
+          builder: (ctx, AsyncSnapshot<List<BookWithLog>> snapshotBooks) {
+            if (snapshotBooks.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            return SingleChildScrollView(
+              child: Container(
+                height: MediaQuery.of(context).size.height - 140,
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: AppConst.heightBetweenWidgets,
+                    ),
+                    DefaultTabController(
+                      length: 3,
+                      child: ToggleButtons(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Text(tr('day')),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Text(tr('month')),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Text(tr('year')),
+                          ),
+                        ],
+                        onPressed: (int index) {
+                          setState(() {
+                            for (int buttonIndex = 0;
+                                buttonIndex < _isSelected.length;
+                                buttonIndex++) {
+                              if (buttonIndex == index) {
+                                _isSelected[buttonIndex] = true;
+                                _currentIndex = buttonIndex;
+                              } else {
+                                _isSelected[buttonIndex] = false;
+                              }
+                            }
+                          });
+                        },
+                        isSelected: _isSelected,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    _buildGoalText(
+                        GoalType.values[_currentIndex], snapshot.data!),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Container(
+                      child: _buildRadialGaugeWidget(
+                          GoalType.values[_currentIndex],
+                          snapshot.data!,
+                          snapshotBooks.data),
+                    )
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 

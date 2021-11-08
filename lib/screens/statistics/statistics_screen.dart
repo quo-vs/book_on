@@ -27,76 +27,85 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(tr('statistics')),
-      ),
-      body: StreamBuilder(
-        stream:
-            Provider.of<BooksDao>(context, listen: false).watchBookWithLogs(),
-        builder: (context, AsyncSnapshot<List<BookWithLog>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
+    return WillPopScope(
+      // disable back button
+      onWillPop: () async => false,
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text(tr('statistics')),
+            iconTheme: const IconThemeData(
+            color: Colors.transparent,
+          ),
+          leading: null,
+        ),
+        body: StreamBuilder(
+          stream:
+              Provider.of<BooksDao>(context, listen: false).watchBookWithLogs(),
+          builder: (context, AsyncSnapshot<List<BookWithLog>> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
 
-          if (!snapshot.hasData || !_containsFinishedBooks(snapshot.data)) {
-            return Center(
-              child: Text(tr('noReadBookYet')),
-            );
-          }
+            if (!snapshot.hasData || !_containsFinishedBooks(snapshot.data)) {
+              return Center(
+                child: Text(tr('noReadBookYet')),
+              );
+            }
 
-          return Column(
-            children: [
-              const SizedBox(
-                height: AppConst.heightBetweenWidgets,
-              ),
-              DefaultTabController(
-                length: 2,
-                child: ToggleButtons(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(tr('month')),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(tr('week')),
-                    ),
-                  ],
-                  onPressed: (int index) {
-                    setState(() {
-                      for (int buttonIndex = 0;
-                          buttonIndex < _isSelected.length;
-                          buttonIndex++) {
-                        if (buttonIndex == index) {
-                          _isSelected[buttonIndex] = true;
-                          _currentIndex = buttonIndex;
-                        } else {
-                          _isSelected[buttonIndex] = false;
+            return Column(
+              children: [
+                const SizedBox(
+                  height: AppConst.heightBetweenWidgets,
+                ),
+                DefaultTabController(
+                  length: 2,
+                  child: ToggleButtons(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Text(tr('month')),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Text(tr('week')),
+                      ),
+                    ],
+                    onPressed: (int index) {
+                      setState(() {
+                        for (int buttonIndex = 0;
+                            buttonIndex < _isSelected.length;
+                            buttonIndex++) {
+                          if (buttonIndex == index) {
+                            _isSelected[buttonIndex] = true;
+                            _currentIndex = buttonIndex;
+                          } else {
+                            _isSelected[buttonIndex] = false;
+                          }
                         }
-                      }
-                    });
-                  },
-                  isSelected: _isSelected,
+                      });
+                    },
+                    isSelected: _isSelected,
+                  ),
                 ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Container(
-                height: 385,
-                width: double.infinity,
-                padding: const EdgeInsets.all(6),
-                child: StatisticCharts(
-                  data: snapshot.data!,
-                  isMonthChart: _currentIndex == 0,
+                const SizedBox(
+                  height: 20,
                 ),
-              ),
-            ],
-          );
-        },
+                Container(
+                  height: 385,
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(6),
+                  child: StatisticCharts(
+                    data: snapshot.data!,
+                    isMonthChart: _currentIndex == 0,
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
